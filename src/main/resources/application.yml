@@ -1,0 +1,33 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/rentalsystem?useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: 1397775326
+  rabbitmq:
+    # 集群地址，用逗号分隔
+    addresses: 10.168.1.222:5672,10.168.1.201:5672,10.168.1.218:5672
+    connection-timeout: 15000
+    username: admin
+    password: 123456
+    virtual-host: /
+  redis:
+    cluster:
+      nodes: 10.168.1.220:9001,10.168.1.177:9002,10.168.1.219:9003,10.168.1.182:9004,10.168.1.157:9005,10.168.1.136:9006
+    connect-timeout: 5000
+    password: 1397775326
+
+jwt:
+  SING: "PTU202012900847"
+  expireTime: 30
+
+fdfs:
+#  outurl: http://10.168.1.185:8888/
+  outurl: http://10.168.1.160/api/
+  so-timeout: 1500
+  connect-timeout: 691
+  tracker-list:
+    10.168.1.185:22122
