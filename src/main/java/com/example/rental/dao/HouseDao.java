@@ -18,7 +18,7 @@ public interface HouseDao {
             "where house_status = '0' " +
             "ORDER BY RAND() " +
             "limit 8")
-    public List<House> getHouseRand();
+    List<House> getHouseRand();
 
     @Select("select " +
             "id,house_name,price,firstImg,city_id,introduce " +
@@ -26,7 +26,7 @@ public interface HouseDao {
             "where type = #{type} and house_status = '0' " +
             "ORDER BY RAND() " +
             "limit #{num}")
-    public List<House> getHouseByTypeRand(@Param("type") String type, @Param("num") int num);
+    List<House> getHouseByTypeRand(@Param("type") String type, @Param("num") int num);
 
     @Select("select id from house where landlord_id = #{landlord_id}")
     List<String> getHouseIdByLandlordId(String landlord_id);
@@ -34,21 +34,21 @@ public interface HouseDao {
     @Select("SELECT id, house_name, price, firstImg, city_id, introduce " +
             "FROM house " +
             "WHERE city_id = #{cityId} and house_status = '0'")
-    public List<House> getHouseByCityId(String cityIds);
+    List<House> getHouseByCityId(String cityIds);
 
     @Select("select " +
             "id,house_name,price,firstImg,city_id,introduce " +
             "from house " +
             "where house_status = '0' " +
             "limit #{BeginIndex},#{EndIndex}")
-    public List<House> getHouseByIndex(@Param("BeginIndex") int BeginIndex, @Param("EndIndex") int EndIndex);
+    List<House> getHouseByIndex(@Param("BeginIndex") int BeginIndex, @Param("EndIndex") int EndIndex);
 
     @Select("select " +
             "id,house_name,price,firstImg,city_id,introduce " +
             "from house " +
             "where type = #{Type} and house_status = '0' " +
             "limit #{BeginIndex},#{EndIndex}")
-    public List<House> getHouseByTypeAndIndex(@Param("Type") String Type, @Param("BeginIndex") int BeginIndex, @Param("EndIndex") int EndIndex);
+    List<House> getHouseByTypeAndIndex(@Param("Type") String Type, @Param("BeginIndex") int BeginIndex, @Param("EndIndex") int EndIndex);
 
     @Select("SELECT id,house_name,price,firstImg,city_id,introduce " +
             "FROM house " +

@@ -8,6 +8,7 @@ import com.example.rental.dao.Role.ConsumerDao;
 import com.example.rental.dao.Role.LandlordDao;
 import com.example.rental.domain.Order.OrderNopay;
 import com.example.rental.service.Order.OrderNopayService;
+import com.example.rental.service.impl.Alert.ConsumerAlertServiceImpl;
 import com.example.rental.utils.Code;
 import com.example.rental.utils.Result;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -46,6 +47,9 @@ public class OrderNopayServiceImpl implements OrderNopayService {
 
     @Autowired
     private OrderRollbackService orderRollbackService;
+
+    @Autowired
+    ConsumerAlertServiceImpl consumerAlertService;
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = "topic.queue1"),
@@ -210,7 +214,15 @@ public class OrderNopayServiceImpl implements OrderNopayService {
 
         //  房东id
         String landlordId = String.valueOf(orderNoPay.get("landlord_id"));
-        return orderRollbackService.moveDataToOrderCompleteAndDeleteDataFromOrderNopay(uuid,consumerId,landlordId,newMoney,OrderPrice);
+        Result result = orderRollbackService.moveDataToOrderCompleteAndDeleteDataFromOrderNopay(uuid,consumerId,landlordId,newMoney,OrderPrice);
+        if (result.getCode().toString().equals("901")){
+            // 操作成功
+            consumerAlertService.addConsumerAlert(
+                    consumerId,OrderPrice,
+                    orderNoPay.get("house_id").toString(),orderNoPay.get("begin_time").toString(),
+                    orderNoPay.get("end_time").toString());
+        }
+        return result;
     }
 
     private boolean isOrderExpired(LocalDateTime orderEndTime) {

@@ -3,6 +3,7 @@ package com.example.rental.service.impl.Order;
 import com.example.rental.dao.Order.*;
 import com.example.rental.dao.Role.ConsumerDao;
 import com.example.rental.dao.Role.LandlordDao;
+import com.example.rental.service.impl.Alert.ConsumerAlertServiceImpl;
 import com.example.rental.utils.Code;
 import com.example.rental.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,14 +150,14 @@ public class OrderRollbackService {
             System.out.println("nowLandMoney2" + nowLandMoney2);
             // 根据需要处理结果
             if (moveResult && deleteResult && updateTimeResult && consumerMoneyResult && consumerPayStatusResult && landlordGetMoneyResult) {
-                // 操作成功
-                return new Result(Code.SAVE_ERR, "订单状态更改成功");
+                return new Result(Code.SAVE_OK, "订单状态更改成功");
             } else {
                 // 操作失败，手动抛出异常触发回滚
                 throw new RuntimeException("操作失败，触发回滚");
             }
         } catch (Exception e) {
             // 处理异常，如果需要的话
+            e.printStackTrace();
             return new Result(Code.SAVE_ERR, "订单状态更改失败");
         }
     }
