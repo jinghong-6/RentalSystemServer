@@ -6,15 +6,19 @@ import com.example.rental.dao.Order.OrderCompleteDao;
 import com.example.rental.dao.Order.OrderNopayDao;
 import com.example.rental.domain.Alert.ConsumerAlert;
 import com.example.rental.domain.House;
+import com.example.rental.service.Alert.ConsumerAlertService;
+import com.example.rental.utils.Code;
+import com.example.rental.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Service
-public class ConsumerAlertServiceImpl {
+public class ConsumerAlertServiceImpl implements ConsumerAlertService {
     @Autowired
     ConsumerAlertDao consumerAlertDao;
 
@@ -23,6 +27,26 @@ public class ConsumerAlertServiceImpl {
 
     @Autowired
     HouseDao houseDao;
+
+    @Override
+    public Result getAlertByConsumerId(String ConsumerId) {
+        List<Map<String,String>> AlertList = consumerAlertDao.getAlertByConsumerId(ConsumerId);
+        if (AlertList.size() == 0){
+            return new Result(Code.SEARCH_ERR,"暂无通知");
+        }else {
+            return new Result(Code.SEARCH_OK,AlertList);
+        }
+    }
+
+    @Override
+    public Result getAlertCountByConsumerId(String ConsumerId) {
+        Integer num = consumerAlertDao.getAlertCountByConsumerId(ConsumerId);
+        if(num != 0){
+            return new Result(Code.SEARCH_OK,num);
+        }else {
+            return new Result(Code.SEARCH_ERR,0);
+        }
+    }
 
     public void addConsumerAlert(String ConsumerId,Long OrderPrice,String HouseId,String OrderBeginTime,String OrderEndTime){
         House house =houseDao.getHouseById(HouseId);
@@ -52,4 +76,6 @@ public class ConsumerAlertServiceImpl {
         // 获取当前时间
         return sdf.format(new Date());
     }
+
+
 }
