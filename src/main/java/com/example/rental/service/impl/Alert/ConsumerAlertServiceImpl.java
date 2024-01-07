@@ -30,11 +30,30 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
 
     @Override
     public Result getAlertByConsumerId(String ConsumerId) {
-        List<Map<String,String>> AlertList = consumerAlertDao.getAlertByConsumerId(ConsumerId);
+        List<Map<String,String>> AlertList = consumerAlertDao.getAlertListByConsumerId(ConsumerId);
         if (AlertList.size() == 0){
             return new Result(Code.SEARCH_ERR,"暂无通知");
         }else {
             return new Result(Code.SEARCH_OK,AlertList);
+        }
+    }
+
+    @Override
+    public Result getAlertByConsumerIdAndAlertId(String ConsumerId, String AlertId) {
+        Map<String,String> Alert = consumerAlertDao.getAlertByConsumerIdAndAlertId(ConsumerId,AlertId);
+        if (Alert != null){
+            return new Result(Code.SEARCH_OK,Alert);
+        }else {
+            return new Result(Code.SEARCH_ERR,"未查询到");
+        }
+    }
+
+    @Override
+    public Result updateConsumerAlertStatus(String ConsumerId,String AlertId) {
+        if (consumerAlertDao.updateConsumerAlertStatus(ConsumerId,AlertId)){
+            return new Result(Code.UPDATE_OK,"已读");
+        }else {
+            return new Result(Code.UPDATE_ERR,"已读失败");
         }
     }
 

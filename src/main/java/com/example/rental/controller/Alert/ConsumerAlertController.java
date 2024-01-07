@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/alert")
+@RequestMapping("/consumerAlert")
 public class ConsumerAlertController {
     @Autowired
     ConsumerAlertService consumerAlertService;
@@ -16,6 +16,16 @@ public class ConsumerAlertController {
     @PostMapping()
     public Result getAlertByConsumerId(String ConsumerId){
         return consumerAlertService.getAlertByConsumerId(ConsumerId);
+    }
+
+    @PostMapping("/getAlert")
+    public Result getAlertByConsumerIdAndAlertId(String ConsumerId,String AlertId){
+        return consumerAlertService.getAlertByConsumerIdAndAlertId(ConsumerId,AlertId);
+    }
+
+    @PostMapping("/read")
+    public Result readAlertByConsumerIdAndAlertId(String ConsumerId,String AlertId){
+        return consumerAlertService.updateConsumerAlertStatus(ConsumerId,AlertId);
     }
 
     @PostMapping("/getCount")
