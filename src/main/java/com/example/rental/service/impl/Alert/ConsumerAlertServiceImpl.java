@@ -60,10 +60,10 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
     @Override
     public Result getAlertCountByConsumerId(String ConsumerId) {
         Integer num = consumerAlertDao.getAlertCountByConsumerId(ConsumerId);
-        if(num != 0){
+        if(num != null){
             return new Result(Code.SEARCH_OK,num);
         }else {
-            return new Result(Code.SEARCH_ERR,0);
+            return new Result(Code.SEARCH_ERR,"查询失败");
         }
     }
 
