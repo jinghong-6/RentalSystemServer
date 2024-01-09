@@ -188,6 +188,7 @@ public class OrderRollbackService {
             }
         } catch (Exception e) {
             // 处理异常，如果需要的话
+            e.printStackTrace();
             return new Result(Code.SAVE_ERR, "订单状态更改失败");
         }
     }

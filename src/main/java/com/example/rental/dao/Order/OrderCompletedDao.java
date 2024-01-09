@@ -7,8 +7,8 @@ import java.util.Map;
 
 @Mapper
 public interface OrderCompletedDao {
-    @Select("select * from order_complete where uuid = #{uuid}")
-    Map<String,String> getCompleteOrderByUuid(String uuid);
+    @Select("select * from order_completed where uuid = #{uuid}")
+    Map<String,Object> getCompletedOrderByUuid(String uuid);
 
     @Select("select " +
             "uuid,house_id,landlord_id,price_all,begin_time,end_time,people_num,order_begin_time,order_pay_time,order_confirm_time " +

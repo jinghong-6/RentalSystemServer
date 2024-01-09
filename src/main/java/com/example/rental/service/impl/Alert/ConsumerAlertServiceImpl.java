@@ -120,13 +120,13 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
     public void addConsumerAlert(String type, String uuid) {
         //支付成功的通知
         if (type.equals("0")) {
-            Map<String, String> Order = orderCompleteDao.getCompleteOrderByUuid(uuid);
+            Map<String, Object> Order = orderCompleteDao.getCompleteOrderByUuid(uuid);
 
-            String HouseId = Order.get("house_id");
-            String ConsumerId = Order.get("consumer_id");
-            String OrderBeginTime = Order.get("begin_time");
-            String OrderEndTime = Order.get("end_time");
-            String OrderPrice = Order.get("price_all");
+            String HouseId = Order.get("house_id").toString();
+            String ConsumerId = Order.get("consumer_id").toString();
+            String OrderBeginTime = Order.get("begin_time").toString();
+            String OrderEndTime = Order.get("end_time").toString();
+            String OrderPrice = Order.get("price_all").toString();
 
             House house = houseDao.getHouseById(HouseId);
 
@@ -143,12 +143,12 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
         }
         //订单确认的通知
         if (type.equals("1")) {
-            Map<String, String> Order = orderCompletedDao.getCompleteOrderByUuid(uuid);
+            Map<String, Object> Order = orderCompletedDao.getCompletedOrderByUuid(uuid);
 
-            String HouseId = Order.get("house_id");
-            String ConsumerId = Order.get("consumer_id");
-            String OrderBeginTime = Order.get("begin_time");
-            String OrderEndTime = Order.get("end_time");
+            String HouseId = Order.get("house_id").toString();
+            String ConsumerId = Order.get("consumer_id").toString();
+            String OrderBeginTime = Order.get("begin_time").toString();
+            String OrderEndTime = Order.get("end_time").toString();
 
             House house = houseDao.getHouseById(HouseId);
 
@@ -159,7 +159,7 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setDatetime(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
-                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",已被房东确认，请耐心等待订单开始，祝您旅途愉快。"
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",订单已被房东接受，请耐心等待订单开始，祝您旅途愉快。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
         }
