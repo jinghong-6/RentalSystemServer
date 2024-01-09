@@ -69,6 +69,12 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
         }
     }
 
+    /**
+     * 格式化订单详情信息，包括获取房屋信息、格式化日期、获取房东信息等。
+     *
+     * @param Orders 包含订单信息的列表(List<Map<String, Object>>)
+     * @return 如果成功处理订单详情，则返回 true，表示找到相关订单；否则返回 false，表示未找到相关订单或处理过程中发生异常。
+     */
     private boolean processOrderDetails(List<Map<String, Object>> Orders) {
         if (Orders != null) {
             SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -119,6 +125,4 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
     public Result addCompletedOrder(String uuid) {
         return orderRollbackService.moveCompleteToCompletedFromOrderComplete(uuid);
     }
-
-
 }

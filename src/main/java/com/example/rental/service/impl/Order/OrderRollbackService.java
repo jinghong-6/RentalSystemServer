@@ -38,6 +38,9 @@ public class OrderRollbackService {
     @Autowired
     private LandlordDao landlordDao;
 
+    @Autowired
+    private ConsumerAlertServiceImpl consumerAlertServiceImpl;
+
     //  未支付订单超时归档的事务操作
     @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
     public boolean moveOrderNopayToOrderEndAndFromOrderNopay(String uuid) {
@@ -177,6 +180,7 @@ public class OrderRollbackService {
             // 根据需要处理结果
             if (moveResult && deleteResult && updateConfirmResult) {
                 // 操作成功
+                consumerAlertServiceImpl.addConsumerAlert("1",uuid);
                 return new Result(Code.UPDATE_OK, "订单状态更改成功");
             } else {
                 // 操作失败，手动抛出异常触发回滚

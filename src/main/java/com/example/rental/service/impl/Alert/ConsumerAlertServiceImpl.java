@@ -3,6 +3,7 @@ package com.example.rental.service.impl.Alert;
 import com.example.rental.dao.Alert.ConsumerAlertDao;
 import com.example.rental.dao.HouseDao;
 import com.example.rental.dao.Order.OrderCompleteDao;
+import com.example.rental.dao.Order.OrderCompletedDao;
 import com.example.rental.dao.Order.OrderNopayDao;
 import com.example.rental.domain.Alert.ConsumerAlert;
 import com.example.rental.domain.House;
@@ -28,68 +29,150 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
     @Autowired
     HouseDao houseDao;
 
+    @Autowired
+    OrderCompleteDao orderCompleteDao;
+
+    @Autowired
+    OrderCompletedDao orderCompletedDao;
+
+
     @Override
+    /**
+     * 根据消费者ID获取通知信息列表。
+     *
+     * @param consumerId 消费者ID
+     * @return 包含通知信息的结果对象
+     *         - 如果存在通知信息，则返回成功的结果对象(Result)，
+     *           其中 Code 为 SEARCH_OK，数据为包含通知信息的列表(List<Map<String, String>>)
+     *         - 如果没有找到通知信息，则返回失败的结果对象(Result)，
+     *           其中 Code 为 SEARCH_ERR，消息为"暂无通知"
+     */
     public Result getAlertByConsumerId(String ConsumerId) {
-        List<Map<String,String>> AlertList = consumerAlertDao.getAlertListByConsumerId(ConsumerId);
-        if (AlertList.size() == 0){
-            return new Result(Code.SEARCH_ERR,"暂无通知");
-        }else {
-            return new Result(Code.SEARCH_OK,AlertList);
+        List<Map<String, String>> AlertList = consumerAlertDao.getAlertListByConsumerId(ConsumerId);
+        if (AlertList.size() == 0) {
+            return new Result(Code.SEARCH_ERR, "暂无通知");
+        } else {
+            return new Result(Code.SEARCH_OK, AlertList);
         }
     }
 
     @Override
+    /**
+     * 根据消费者ID和通知ID获取通知信息。
+     *
+     * @param consumerId 消费者ID
+     * @param alertId    通知ID
+     * @return 包含通知信息的结果对象
+     *         - 如果存在该通知信息，则返回成功的结果对象(Result)，
+     *           其中 Code 为 SEARCH_OK，数据为包含通知信息的映射(Map<String, String>)
+     *         - 如果未查询到相应通知信息，则返回失败的结果对象(Result)，
+     *           其中 Code 为 SEARCH_ERR，消息为"未查询到"
+     */
     public Result getAlertByConsumerIdAndAlertId(String ConsumerId, String AlertId) {
-        Map<String,String> Alert = consumerAlertDao.getAlertByConsumerIdAndAlertId(ConsumerId,AlertId);
-        if (Alert != null){
-            return new Result(Code.SEARCH_OK,Alert);
-        }else {
-            return new Result(Code.SEARCH_ERR,"未查询到");
+        Map<String, String> Alert = consumerAlertDao.getAlertByConsumerIdAndAlertId(ConsumerId, AlertId);
+        if (Alert != null) {
+            return new Result(Code.SEARCH_OK, Alert);
+        } else {
+            return new Result(Code.SEARCH_ERR, "未查询到");
         }
     }
 
     @Override
-    public Result updateConsumerAlertStatus(String ConsumerId,String AlertId) {
-        if (consumerAlertDao.updateConsumerAlertStatus(ConsumerId,AlertId)){
-            return new Result(Code.UPDATE_OK,"已读");
-        }else {
-            return new Result(Code.UPDATE_ERR,"已读失败");
+    /**
+     * 更新消费者通知状态为已读。
+     *
+     * @param consumerId 消费者ID
+     * @param alertId    通知ID
+     * @return 包含更新结果的结果对象
+     *         - 如果更新成功，则返回成功的结果对象(Result)，
+     *           其中 Code 为 UPDATE_OK，消息为"已读"
+     *         - 如果更新失败，则返回失败的结果对象(Result)，
+     *           其中 Code 为 UPDATE_ERR，消息为"已读失败"
+     */
+    public Result updateConsumerAlertStatus(String ConsumerId, String AlertId) {
+        if (consumerAlertDao.updateConsumerAlertStatus(ConsumerId, AlertId)) {
+            return new Result(Code.UPDATE_OK, "已读");
+        } else {
+            return new Result(Code.UPDATE_ERR, "已读失败");
         }
     }
 
     @Override
+    /**
+     * 获取消费者的通知数量。
+     *
+     * @param consumerId 消费者ID
+     * @return 包含通知数量的结果对象
+     *         - 如果成功查询到通知数量，则返回成功的结果对象(Result)，
+     *           其中 Code 为 SEARCH_OK，数据为通知数量(Integer)
+     *         - 如果查询失败或未找到相应通知数量，则返回失败的结果对象(Result)，
+     *           其中 Code 为 SEARCH_ERR，消息为"查询失败"
+     */
     public Result getAlertCountByConsumerId(String ConsumerId) {
         Integer num = consumerAlertDao.getAlertCountByConsumerId(ConsumerId);
-        if(num != null){
-            return new Result(Code.SEARCH_OK,num);
-        }else {
-            return new Result(Code.SEARCH_ERR,"查询失败");
+        if (num != null) {
+            return new Result(Code.SEARCH_OK, num);
+        } else {
+            return new Result(Code.SEARCH_ERR, "查询失败");
         }
     }
 
-    public void addConsumerAlert(String ConsumerId,Long OrderPrice,String HouseId,String OrderBeginTime,String OrderEndTime){
-        House house =houseDao.getHouseById(HouseId);
+    public void addConsumerAlert(String type, String uuid) {
+        //支付成功的通知
+        if (type.equals("0")) {
+            Map<String, String> Order = orderCompleteDao.getCompleteOrderByUuid(uuid);
 
-        ConsumerAlert consumerAlert = new ConsumerAlert();
-        consumerAlert.setConsumer_id(ConsumerId);
-        consumerAlert.setAlert_status("0");
-        consumerAlert.setTitle("扣款通知");
-        consumerAlert.setDatetime(getDateTime1());
-        consumerAlert.setContent(
-                "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
-                ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",共支出" + OrderPrice + "元。"
-        );
-        consumerAlertDao.InsertConsumerAlert(consumerAlert);
+            String HouseId = Order.get("house_id");
+            String ConsumerId = Order.get("consumer_id");
+            String OrderBeginTime = Order.get("begin_time");
+            String OrderEndTime = Order.get("end_time");
+            String OrderPrice = Order.get("price_all");
+
+            House house = houseDao.getHouseById(HouseId);
+
+            ConsumerAlert consumerAlert = new ConsumerAlert();
+            consumerAlert.setConsumer_id(ConsumerId);
+            consumerAlert.setAlert_status("0");
+            consumerAlert.setTitle("扣款通知");
+            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setContent(
+                    "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",共支出" + OrderPrice + "元。"
+            );
+            consumerAlertDao.InsertConsumerAlert(consumerAlert);
+        }
+        //订单确认的通知
+        if (type.equals("1")) {
+            Map<String, String> Order = orderCompletedDao.getCompleteOrderByUuid(uuid);
+
+            String HouseId = Order.get("house_id");
+            String ConsumerId = Order.get("consumer_id");
+            String OrderBeginTime = Order.get("begin_time");
+            String OrderEndTime = Order.get("end_time");
+
+            House house = houseDao.getHouseById(HouseId);
+
+            ConsumerAlert consumerAlert = new ConsumerAlert();
+            consumerAlert.setConsumer_id(ConsumerId);
+            consumerAlert.setAlert_status("0");
+            consumerAlert.setTitle("商家接受订单通知");
+            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setContent(
+                    "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",已被房东确认，请耐心等待订单开始，祝您旅途愉快。"
+            );
+            consumerAlertDao.InsertConsumerAlert(consumerAlert);
+        }
     }
 
-    private String getDateTime1(){
+    private String getDateTime1() {
         // 创建 SimpleDateFormat 对象
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // 获取当前时间
         return sdf.format(new Date());
     }
 
-    private String getDateTime2(){
+    private String getDateTime2() {
         // 创建 SimpleDateFormat 对象
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         // 获取当前时间

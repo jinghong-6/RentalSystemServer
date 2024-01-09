@@ -218,9 +218,7 @@ public class OrderNopayServiceImpl implements OrderNopayService {
         if (result.getCode().toString().equals("901")){
             // 操作成功
             consumerAlertService.addConsumerAlert(
-                    consumerId,OrderPrice,
-                    orderNoPay.get("house_id").toString(),orderNoPay.get("begin_time").toString(),
-                    orderNoPay.get("end_time").toString());
+                    "0",uuid);
         }
         return result;
     }
