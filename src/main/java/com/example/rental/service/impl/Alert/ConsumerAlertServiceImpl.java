@@ -2,9 +2,7 @@ package com.example.rental.service.impl.Alert;
 
 import com.example.rental.dao.Alert.ConsumerAlertDao;
 import com.example.rental.dao.HouseDao;
-import com.example.rental.dao.Order.OrderCompleteDao;
-import com.example.rental.dao.Order.OrderCompletedDao;
-import com.example.rental.dao.Order.OrderNopayDao;
+import com.example.rental.dao.Order.*;
 import com.example.rental.domain.Alert.ConsumerAlert;
 import com.example.rental.domain.House;
 import com.example.rental.service.Alert.ConsumerAlertService;
@@ -35,6 +33,11 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
     @Autowired
     OrderCompletedDao orderCompletedDao;
 
+    @Autowired
+    OrderEndDao orderEndDao;
+
+    @Autowired
+    OrderBeginDao orderBeginDao;
 
     @Override
     /**
@@ -159,10 +162,58 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setDatetime(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
-                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",订单已被房东接受，请耐心等待订单开始，祝您旅途愉快。"
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
+                            ",订单已被房东接受，请耐心等待订单开始，祝您旅途愉快。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
         }
+        //订单结束的通知
+        if (type.equals("2")){
+            Map<String, Object> Order = orderEndDao.getEndOrderByUuid(uuid);
+
+            String HouseId = Order.get("house_id").toString();
+            String ConsumerId = Order.get("consumer_id").toString();
+            String OrderBeginTime = Order.get("begin_time").toString();
+            String OrderEndTime = Order.get("end_time").toString();
+
+            House house = houseDao.getHouseById(HouseId);
+
+            ConsumerAlert consumerAlert = new ConsumerAlert();
+            consumerAlert.setConsumer_id(ConsumerId);
+            consumerAlert.setAlert_status("0");
+            consumerAlert.setTitle("订单结束通知");
+            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setContent(
+                    "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
+                            ",订单已于结束，希望您下次继续光临，若您满意的话，快去评价吧。"
+            );
+            consumerAlertDao.InsertConsumerAlert(consumerAlert);
+        }
+        //订单开始的通知
+        if (type.equals("3")){
+            Map<String, Object> Order = orderBeginDao.getBeginOrderByUuid(uuid);
+
+            String HouseId = Order.get("house_id").toString();
+            String ConsumerId = Order.get("consumer_id").toString();
+            String OrderBeginTime = Order.get("begin_time").toString();
+            String OrderEndTime = Order.get("end_time").toString();
+
+            House house = houseDao.getHouseById(HouseId);
+
+            ConsumerAlert consumerAlert = new ConsumerAlert();
+            consumerAlert.setConsumer_id(ConsumerId);
+            consumerAlert.setAlert_status("0");
+            consumerAlert.setTitle("订单开始通知");
+            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setContent(
+                    "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
+                            ",订单已开始，祝您旅途愉快，一路顺风。"
+            );
+            consumerAlertDao.InsertConsumerAlert(consumerAlert);
+        }
+
     }
 
     private String getDateTime1() {

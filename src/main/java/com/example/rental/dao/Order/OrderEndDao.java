@@ -7,6 +7,9 @@ import java.util.Map;
 
 @Mapper
 public interface OrderEndDao {
+    @Select("select * from order_end where uuid = #{uuid}")
+    Map<String,Object> getEndOrderByUuid(String uuid);
+
     @Select("select uuid,grades from order_end where house_id = #{houseId} order by order_close_time desc")
     List<Map<String,String>> getUuidByHouseId(String houseId);
 

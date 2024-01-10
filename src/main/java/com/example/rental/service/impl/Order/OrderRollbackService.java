@@ -110,6 +110,7 @@ public class OrderRollbackService {
             if (moveResult && deleteResult) {
                 // 操作成功
                 System.out.println("待开始订单转化为开始订单成功");
+                consumerAlertServiceImpl.addConsumerAlert("3",uuid);
                 return true;
             } else {
                 // 操作失败，手动抛出异常触发回滚
@@ -117,8 +118,8 @@ public class OrderRollbackService {
             }
         } catch (Exception e) {
             // 处理异常，如果需要的话
+            e.printStackTrace();
             throw new RuntimeException("操作失败，触发回滚");
-//            return false;
         }
     }
 
@@ -209,6 +210,7 @@ public class OrderRollbackService {
             if (moveResult && deleteResult && updateConfirmResult) {
                 // 操作成功
                 System.out.println("开始订单归档成功");
+                consumerAlertServiceImpl.addConsumerAlert("2",uuid);
                 return true;
             } else {
                 // 操作失败，手动抛出异常触发回滚
@@ -217,6 +219,7 @@ public class OrderRollbackService {
         } catch (Exception e) {
             // 处理异常，如果需要的话
             // 操作失败，手动抛出异常触发回滚
+            e.printStackTrace();
             throw new RuntimeException("操作失败，触发回滚");
         }
     }
