@@ -36,6 +36,16 @@ public class LandlordServiceImpl implements LandlordService {
     private HouseDao houseDao;
 
     @Override
+    /**
+     * 获取房东相关信息，包括评论数、待确认订单数、已完成订单数、订单完成率、民宿类型统计以及每月订单数和总价。
+     *
+     * @param landlordId 房东ID
+     * @return 包含房东相关信息的结果对象
+     *         - 如果成功查询到相关信息，则返回成功的结果对象(Result)，
+     *           其中 Code 为 SEARCH_OK，数据为包含房东信息的映射(Map<String, Object>)
+     *         - 如果查询失败或未找到相关信息，则返回失败的结果对象(Result)，
+     *           其中 Code 为 SEARCH_ERR
+     */
     public Result getLandInfo(String LandlordId) {
         Map<String,Object> map = new HashMap<>();
         //  获取评论数
@@ -84,6 +94,13 @@ public class LandlordServiceImpl implements LandlordService {
         return new Result(Code.SEARCH_OK,map);
     }
 
+    /**
+     * 统计房屋类型数量并返回列表形式的结果。
+     *
+     * @param houseIdList 包含房屋ID的列表(List<String>)
+     * @return 包含房屋类型统计结果的列表(List<Map<String, String>>)
+     *         - 每个Map包含两个键值对："name"表示房屋类型，"value"表示该类型的数量
+     */
     private List<Map<String, String>> getCountList(List<String> houseIdList) {
         List<Map<String, String>> resultList = new ArrayList<>();
         List<String> houseTypeList = new ArrayList<>();
@@ -111,6 +128,15 @@ public class LandlordServiceImpl implements LandlordService {
     }
 
     @Override
+    /**
+     * 获取相同手机号的商家账户信息，用于商家注册时验证手机号唯一性。
+     *
+     * @param tele 手机号
+     * @return 如果手机号在数据库中不存在相同账户，则返回成功的结果对象(Result)，
+     *         其中 Code 为 SEARCH_OK，数据为注册令牌(AccountToken)；
+     *         如果手机号在数据库中存在相同账户，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SAVE_ERR，数据为错误码"500"。
+     */
     public Result getSameAccount(String tele) {
         System.out.println("商家注册");
         String filtered = CharacterFilter.filterSpecialCharacters(tele);
@@ -123,6 +149,15 @@ public class LandlordServiceImpl implements LandlordService {
     }
 
     @Override
+    /**
+     * 房东注册功能，将房东信息插入数据库进行注册。
+     *
+     * @param landlord 包含房东信息的对象(Landlord)
+     * @return 如果成功注册房东账户，则返回成功的结果对象(Result)，
+     *         其中 Code 为 SAVE_OK，数据为 true；
+     *         如果注册失败，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SAVE_ERR，数据为 false。
+     */
     public Result landlordRegister(Landlord landlord) {
         //  注册时间
         Date date = new Date();
@@ -163,6 +198,16 @@ public class LandlordServiceImpl implements LandlordService {
     }
 
     @Override
+    /**
+     * 房东登录功能，验证手机号和密码，返回登录结果和相应的访问令牌。
+     *
+     * @param tele 手机号
+     * @param pwd  密码
+     * @return 如果手机号和密码验证成功，则返回成功的结果对象(Result)，
+     *         其中 Code 为 SEARCH_OK，数据为包含房东信息和令牌的JSON对象(JSONObject)；
+     *         如果验证失败，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SEARCH_ERR，数据为错误码"500"。
+     */
     public Result landlordAutoLogin(String tele) {
         //    获取用户信息
         Landlord landlord = landlordDao.getLandInfoByTele(tele);
@@ -180,6 +225,15 @@ public class LandlordServiceImpl implements LandlordService {
     }
 
     @Override
+    /**
+     * 更新房东信息。
+     *
+     * @param landlord 包含更新后房东信息的对象(Landlord)
+     * @return 如果成功更新房东信息，则返回成功的结果对象(Result)，
+     *         其中 Code 为 UPDATE_OK，消息为"更新成功"；
+     *         如果更新失败，则返回失败的结果对象(Result)，
+     *         其中 Code 为 UPDATE_ERR，消息为"更新失败"。
+     */
     public Result UpdateLandlordInfo(Landlord landlord) {
         System.out.println(landlord);
         boolean updateResult = landlordDao.UpdateLandlordInfo(landlord);
