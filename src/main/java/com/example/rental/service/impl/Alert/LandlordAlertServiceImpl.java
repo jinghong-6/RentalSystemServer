@@ -3,6 +3,7 @@ package com.example.rental.service.impl.Alert;
 import com.example.rental.dao.Alert.LandlordAlertDao;
 import com.example.rental.dao.HouseDao;
 import com.example.rental.dao.Order.OrderCompleteDao;
+import com.example.rental.dao.Order.OrderEndDao;
 import com.example.rental.dao.Order.OrderNopayDao;
 import com.example.rental.domain.Alert.LandlordAlert;
 import com.example.rental.domain.House;
@@ -30,6 +31,9 @@ public class LandlordAlertServiceImpl implements LandlordAlertService {
 
     @Autowired
     OrderCompleteDao orderCompleteDao;
+
+    @Autowired
+    OrderEndDao orderEndDao;
 
     @Override
     public Result getAlertByLandlordId(String LandlordId) {
@@ -93,6 +97,26 @@ public class LandlordAlertServiceImpl implements LandlordAlertService {
             landlordAlert.setContent(
                     "您的" + house.getHouse_name() + "于" + getDateTime1() + "被预定了" +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",快去确认吧。"
+            );
+            landlordAlertDao.InsertLandlordAlert(landlordAlert);
+        }
+        //商家新增评论通知
+        if (type.equals("1")){
+            Map<String, Object> Order = orderEndDao.getEndOrderByUuid(uuid);
+
+            String HouseId = Order.get("house_id").toString();
+            String LandlordId = Order.get("landlord_id").toString();
+
+            House house = houseDao.getHouseById(HouseId);
+
+            LandlordAlert landlordAlert = new LandlordAlert();
+            landlordAlert.setLandlord_id(LandlordId);
+            landlordAlert.setAlert_status("0");
+            landlordAlert.setTitle("评论通知");
+            landlordAlert.setDatetime(getDateTime1());
+            landlordAlert.setContent(
+                    "您的" + house.getHouse_name() + "于" + getDateTime1() + "被评论了" +
+                            ",快去查看吧。"
             );
             landlordAlertDao.InsertLandlordAlert(landlordAlert);
         }

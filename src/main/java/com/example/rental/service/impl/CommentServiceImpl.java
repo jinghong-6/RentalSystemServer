@@ -6,6 +6,7 @@ import com.example.rental.dao.Role.ConsumerDao;
 import com.example.rental.dao.Role.LandlordDao;
 import com.example.rental.domain.Comment;
 import com.example.rental.service.CommentService;
+import com.example.rental.service.impl.Alert.LandlordAlertServiceImpl;
 import com.example.rental.utils.Code;
 import com.example.rental.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Autowired
     private CommentDao commentDao;
+
+    @Autowired
+    private LandlordAlertServiceImpl landlordAlertService;
 
     @Override
     public Result getCommentByHouseId(String houseId) {
@@ -89,6 +93,7 @@ public class CommentServiceImpl implements CommentService {
         if (!commentDao.InsertComment(comment)){
             return new Result(Code.UPDATE_ERR,"评论失败");
         }else {
+            landlordAlertService.addLandlordAlert("1",comment.getUuid());
             return new Result(Code.UPDATE_OK,"评论成功");
         }
     }
