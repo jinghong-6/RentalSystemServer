@@ -9,6 +9,7 @@ import com.example.rental.dao.Role.LandlordDao;
 import com.example.rental.domain.Order.OrderNopay;
 import com.example.rental.service.Order.OrderNopayService;
 import com.example.rental.service.impl.Alert.ConsumerAlertServiceImpl;
+import com.example.rental.service.impl.Alert.LandlordAlertServiceImpl;
 import com.example.rental.utils.Code;
 import com.example.rental.utils.Result;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -51,6 +52,9 @@ public class OrderNopayServiceImpl implements OrderNopayService {
     @Autowired
     ConsumerAlertServiceImpl consumerAlertService;
 
+    @Autowired
+    LandlordAlertServiceImpl landlordAlertService;
+
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = "topic.queue1"),
             exchange = @Exchange(name = "itcast.topic", type = ExchangeTypes.TOPIC),
@@ -60,6 +64,18 @@ public class OrderNopayServiceImpl implements OrderNopayService {
         //  接收要反序列化
         OrderNopay orderNopay1 = JSONObject.parseObject(orderNopay, OrderNopay.class);
         addOrder(orderNopay1);
+    }
+
+    @Override
+    public Result addOrder(OrderNopay orderNopay) {
+        if (orderNopayDao.addOrder(orderNopay)) {
+            System.out.println("订单生成成功");
+            landlordAlertService.addLandlordAlert("0",orderNopay.getUuid());
+            return new Result(Code.SAVE_OK, "订单生成成功");
+        } else {
+            return new Result(Code.SAVE_ERR, "订单生成失败");
+        }
+
     }
 
     @Override
@@ -127,18 +143,6 @@ public class OrderNopayServiceImpl implements OrderNopayService {
         } else {
             return false; // 返回 false 表示未找到相关订单
         }
-    }
-
-
-    @Override
-    public Result addOrder(OrderNopay orderNopay) {
-        if (orderNopayDao.addOrder(orderNopay)) {
-            System.out.println("订单生成成功");
-            return new Result(Code.SAVE_OK, "订单生成成功");
-        } else {
-            return new Result(Code.SAVE_ERR, "订单生成失败");
-        }
-
     }
 
     @Override

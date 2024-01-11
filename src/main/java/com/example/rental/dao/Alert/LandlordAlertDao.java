@@ -1,9 +1,7 @@
 package com.example.rental.dao.Alert;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.example.rental.domain.Alert.LandlordAlert;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 import java.util.Map;
@@ -21,4 +19,7 @@ public interface LandlordAlertDao {
 
     @Update("update landlord_alert set alert_status = '1' where landlord_id = #{LandlordId} and id = #{AlertId}")
     boolean updateLandlordAlertStatus(@Param("LandlordId") String LandlordId, @Param("AlertId") String AlertId);
+
+    @Insert("insert into landlord_alert values(#{id},#{landlord_id},#{title},#{content},#{alert_status},#{datetime})")
+    boolean InsertLandlordAlert(LandlordAlert landlordAlert);
 }

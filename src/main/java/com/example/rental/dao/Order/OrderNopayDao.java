@@ -8,6 +8,8 @@ import java.util.Map;
 
 @Mapper
 public interface OrderNopayDao {
+    @Select("select * from order_nopay where uuid = #{uuid}")
+    Map<String,Object> getNopayOrderByUuid(String uuid);
 
     @Select("select " +
             "uuid,house_id,landlord_id,price_all,begin_time,end_time,people_num,order_begin_time,order_end_time " +
