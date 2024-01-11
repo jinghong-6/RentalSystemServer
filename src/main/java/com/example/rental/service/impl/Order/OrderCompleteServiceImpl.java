@@ -34,6 +34,17 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
     private OrderRollbackService orderRollbackService;
 
     @Override
+    /**
+     * 查询订单支付状态，返回支付成功、支付失败或支付异常的结果。
+     *
+     * @param uuid 订单唯一标识符
+     * @return 如果支付失败，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SEARCH_ERR，消息为"支付失败"；
+     *         如果支付成功，则返回成功的结果对象(Result)，
+     *         其中 Code 为 SEARCH_OK，消息为"支付成功"；
+     *         如果支付异常，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SEARCH_ERR，消息为"支付异常，请联系管理员"。
+     */
     public Result getPaySuccessOrFailed(String uuid) {
         List<Map<String,String>> paySuccessOrFailed = orderCompleteDao.getPaySuccessOrFailed(uuid);
         if (paySuccessOrFailed.isEmpty()){
@@ -46,6 +57,15 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
     }
 
     @Override
+    /**
+     * 根据消费者ID获取订单信息列表。
+     *
+     * @param consumerId 消费者ID
+     * @return 如果成功找到相关订单信息，则返回成功的结果对象(Result)，
+     *         其中 Code 为 SEARCH_OK，数据为包含订单信息的列表(List<Map<String, Object>>)；
+     *         如果未找到相关订单信息，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SEARCH_ERR，消息为"未找到相关订单"。
+     */
     public Result getOrderByConsumerId(String consumer_id) {
         List<Map<String, Object>> Orders = orderCompleteDao.getOrderByConsumerId(consumer_id);
         boolean ordersFound = processOrderDetails(Orders);
@@ -58,6 +78,15 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
     }
 
     @Override
+    /**
+     * 根据房东ID获取订单信息列表。
+     *
+     * @param landlordId 房东ID
+     * @return 如果成功找到相关订单信息，则返回成功的结果对象(Result)，
+     *         其中 Code 为 SEARCH_OK，数据为包含订单信息的列表(List<Map<String, Object>>)；
+     *         如果未找到相关订单信息，则返回失败的结果对象(Result)，
+     *         其中 Code 为 SEARCH_ERR，消息为"未找到相关订单"。
+     */
     public Result getOrderByLandlordId(String landlord_id) {
         List<Map<String, Object>> Orders = orderCompleteDao.getOrderByLandlordId(landlord_id);
         boolean ordersFound = processOrderDetails(Orders);
@@ -122,6 +151,13 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
     }
 
     @Override
+    /**
+     * 将指定订单标识的订单移动到已完成订单列表中。
+     *
+     * @param uuid 订单唯一标识符
+     * @return 如果成功将订单移动到已完成订单列表，则返回成功的结果对象(Result)；
+     *         如果移动过程中发生错误或未找到相应订单，则返回失败的结果对象(Result)。
+     */
     public Result addCompletedOrder(String uuid) {
         return orderRollbackService.moveCompleteToCompletedFromOrderComplete(uuid);
     }
