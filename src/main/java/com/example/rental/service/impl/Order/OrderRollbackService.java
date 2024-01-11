@@ -89,7 +89,7 @@ public class OrderRollbackService {
                     System.out.println("待确认订单超时归档成功");
                 }
                 if (type.equals("1")){
-
+                    consumerAlertServiceImpl.addConsumerAlert("4",uuid);
                 }
                 return new Result(Code.SAVE_OK, "订单状态更改成功");
             } else {

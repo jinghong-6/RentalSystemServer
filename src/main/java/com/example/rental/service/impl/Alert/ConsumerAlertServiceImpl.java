@@ -213,7 +213,29 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
         }
+        //订单被取消的通知
+        if (type.equals("4")){
+            Map<String, Object> Order = orderEndDao.getEndOrderByUuid(uuid);
 
+            String HouseId = Order.get("house_id").toString();
+            String ConsumerId = Order.get("consumer_id").toString();
+            String OrderBeginTime = Order.get("begin_time").toString();
+            String OrderEndTime = Order.get("end_time").toString();
+
+            House house = houseDao.getHouseById(HouseId);
+
+            ConsumerAlert consumerAlert = new ConsumerAlert();
+            consumerAlert.setConsumer_id(ConsumerId);
+            consumerAlert.setAlert_status("0");
+            consumerAlert.setTitle("订单结束通知");
+            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setContent(
+                    "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
+                            ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
+                            ",订单已被房东取消，请挑选其他民宿吧。"
+            );
+            consumerAlertDao.InsertConsumerAlert(consumerAlert);
+        }
     }
 
     private String getDateTime1() {
