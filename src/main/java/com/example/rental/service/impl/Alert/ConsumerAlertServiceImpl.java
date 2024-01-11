@@ -227,7 +227,7 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             ConsumerAlert consumerAlert = new ConsumerAlert();
             consumerAlert.setConsumer_id(ConsumerId);
             consumerAlert.setAlert_status("0");
-            consumerAlert.setTitle("订单结束通知");
+            consumerAlert.setTitle("订单取消通知");
             consumerAlert.setDatetime(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
