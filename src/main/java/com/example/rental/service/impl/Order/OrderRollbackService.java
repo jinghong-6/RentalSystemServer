@@ -69,9 +69,9 @@ public class OrderRollbackService {
         }
     }
 
-    //  待确认订单超时归档的事务操作
+    //  待确认订单超时归档和商家取消订单的事务操作
     @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
-    public boolean moveOrderCompleteToOrderEndFromOrderComplete(String uuid) {
+    public Result moveOrderCompleteToOrderEndFromOrderComplete(String uuid,String type) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
@@ -85,16 +85,21 @@ public class OrderRollbackService {
             // 根据需要处理结果
             if (moveResult && deleteResult && changeOrderStatusResult && EndTimeResult) {
                 // 操作成功
-                System.out.println("待确认订单超时归档成功");
-                return true;
+                if (type.equals("0")){
+                    System.out.println("待确认订单超时归档成功");
+                }
+                if (type.equals("1")){
+
+                }
+                return new Result(Code.SAVE_OK, "订单状态更改成功");
             } else {
                 // 操作失败，手动抛出异常触发回滚
                 throw new RuntimeException("操作失败，触发回滚");
             }
         } catch (Exception e) {
             // 处理异常，如果需要的话
-            throw new RuntimeException("操作失败，触发回滚");
-//            return false;
+            e.printStackTrace();
+            return new Result(Code.SAVE_ERR, "订单状态更改失败");
         }
     }
 

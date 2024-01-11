@@ -161,4 +161,16 @@ public class OrderCompleteServiceImpl implements OrderCompleteService {
     public Result addCompletedOrder(String uuid) {
         return orderRollbackService.moveCompleteToCompletedFromOrderComplete(uuid);
     }
+
+    @Override
+    /**
+     * 将指定订单标识的订单移动到已结束订单列表中。
+     *
+     * @param uuid 订单唯一标识符
+     * @return 如果成功将订单移动到已结束订单列表，则返回成功的结果对象(Result)；
+     *         如果移动过程中发生错误或未找到相应订单，则返回失败的结果对象(Result)。
+     */
+    public Result addEndOrder(String uuid) {
+        return orderRollbackService.moveOrderCompleteToOrderEndFromOrderComplete(uuid,"1");
+    }
 }

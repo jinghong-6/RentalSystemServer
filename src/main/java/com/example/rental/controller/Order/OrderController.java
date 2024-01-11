@@ -217,6 +217,11 @@ public class OrderController {
         return orderCompleteService.addCompletedOrder(uuid);
     }
 
+    @PostMapping("/CancelOrder")
+    public Result CancelOrder(String uuid){
+        return orderCompleteService.addEndOrder(uuid);
+    }
+
     @PostMapping("/CNotRated")
     public Result getNotRatedOrderByConsumerId(String ConsumerId){
         return orderEndService.getNotRatedOrderByConsumerId(ConsumerId);

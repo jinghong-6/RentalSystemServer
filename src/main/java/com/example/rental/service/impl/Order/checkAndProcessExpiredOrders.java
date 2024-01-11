@@ -1,6 +1,8 @@
 package com.example.rental.service.impl.Order;
 
 import com.example.rental.dao.Order.*;
+import com.example.rental.utils.Code;
+import com.example.rental.utils.Result;
 import org.mybatis.spring.MyBatisSystemException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,8 +55,8 @@ public class checkAndProcessExpiredOrders {
         List<String> processExpiredCompleteOrders = orderCompleteDao.getAllProcessExpiredOrdersByDateTime(currentTime.format(formatter));
         for (String uuid : processExpiredCompleteOrders){
             try {
-                boolean CompleteSuccess = orderRollbackService.moveOrderCompleteToOrderEndFromOrderComplete(uuid);
-                if (!CompleteSuccess) {
+                Result CompleteSuccess = orderRollbackService.moveOrderCompleteToOrderEndFromOrderComplete(uuid,"0");
+                if (CompleteSuccess.getCode().equals(Code.SAVE_ERR)) {
                     // 处理操作失败的情况，例如记录错误日志
                     System.err.println("订单超时处理失败: " + uuid);
                 }

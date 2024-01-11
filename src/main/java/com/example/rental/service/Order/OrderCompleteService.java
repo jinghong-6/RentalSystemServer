@@ -14,4 +14,7 @@ public interface OrderCompleteService {
 
     //  改变订单状态至待开始
     public Result addCompletedOrder(String uuid);
+
+    //  改变订单状态至待结束
+    public Result addEndOrder(String uuid);
 }
