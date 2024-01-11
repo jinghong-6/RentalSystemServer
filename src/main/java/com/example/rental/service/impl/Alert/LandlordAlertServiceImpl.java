@@ -53,11 +53,10 @@ public class LandlordAlertServiceImpl implements LandlordAlertService {
 
     @Override
     public Result updateLandlordAlertStatus(String LandlordId, String AlertId) {
-        Map<String, String> Alert = landlordAlertDao.getAlertByLandlordIdAndAlertId(LandlordId, AlertId);
-        if (Alert != null) {
-            return new Result(Code.SEARCH_OK, Alert);
+        if (landlordAlertDao.updateLandlordAlertStatus(LandlordId, AlertId)) {
+            return new Result(Code.UPDATE_OK, "已读");
         } else {
-            return new Result(Code.SEARCH_ERR, "未查询到");
+            return new Result(Code.UPDATE_ERR, "已读失败");
         }
     }
 
