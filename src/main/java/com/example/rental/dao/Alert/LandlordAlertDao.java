@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Mapper
 public interface LandlordAlertDao {
-    @Select("select * from landlord_alert where landlord_id = #{LandlordId}")
+    @Select("select * from landlord_alert where landlord_id = #{LandlordId} ORDER BY create_time DESC")
     List<Map<String, String>> getAlertListByLandlordId(String LandlordId);
 
     @Select("select * from landlord_alert where landlord_id = #{LandlordId} and id = #{AlertId}")

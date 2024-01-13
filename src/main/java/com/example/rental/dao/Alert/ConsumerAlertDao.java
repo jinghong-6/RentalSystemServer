@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Mapper
 public interface ConsumerAlertDao {
-    @Select("select * from consumer_alert where consumer_id = #{ConsumerId}")
+    @Select("select * from consumer_alert where consumer_id = #{ConsumerId} ORDER BY create_time DESC")
     List<Map<String, String>> getAlertListByConsumerId(String ConsumerId);
 
     @Select("select * from consumer_alert where consumer_id = #{ConsumerId} and id = #{AlertId}")
