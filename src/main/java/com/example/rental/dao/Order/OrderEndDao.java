@@ -37,7 +37,8 @@ public interface OrderEndDao {
             "from " +
             "order_end " +
             "where " +
-            "consumer_id = #{ConsumerId} and grades = #{grades}")
+            "consumer_id = #{ConsumerId} and grades = #{grades} " +
+            "ORDER BY order_close_time DESC")
     List<Map<String, Object>> getNotRatedCommentOrderByConsumerId(@Param("ConsumerId") String ConsumerId,@Param("grades") String grades);
 
     @Select("select " +
@@ -46,7 +47,8 @@ public interface OrderEndDao {
             "from " +
             "order_end " +
             "where " +
-            "consumer_id = #{ConsumerId} and grades != '0'")
+            "consumer_id = #{ConsumerId} and grades != '0' " +
+            "ORDER BY order_close_time DESC")
     List<Map<String, Object>> getRatedCommentOrderByConsumerId(String ConsumerId);
 
     @Select("select " +
@@ -55,7 +57,8 @@ public interface OrderEndDao {
             "from " +
             "order_end " +
             "where " +
-            "landlord_id = #{LandlordId} and grades = #{grades}")
+            "landlord_id = #{LandlordId} and grades = #{grades} " +
+            "ORDER BY order_close_time DESC")
     List<Map<String, Object>> getNotRatedCommentOrderByLandlordId(@Param("LandlordId") String LandlordId,@Param("grades") String grades);
 
     @Select("select " +
@@ -64,7 +67,8 @@ public interface OrderEndDao {
             "from " +
             "order_end " +
             "where " +
-            "landlord_id = #{LandlordId} and grades != '0'")
+            "landlord_id = #{LandlordId} and grades != '0'" +
+            "ORDER BY order_close_time DESC")
     List<Map<String, Object>> getRatedCommentOrderByLandlordId(String LandlordId);
 
     @Select("select " +
