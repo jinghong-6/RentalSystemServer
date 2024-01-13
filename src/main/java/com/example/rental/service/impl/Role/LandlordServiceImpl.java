@@ -179,7 +179,7 @@ public class LandlordServiceImpl implements LandlordService {
 
     @Override
     public Result landlordLogin(String tele, String pwd) {
-        if (landlordDao.getPwdByTele(tele).equals(pwd)){
+        if (landlordDao.getPwdByTele(tele) != null && landlordDao.getPwdByTele(tele).equals(pwd)){
             //    获取用户信息
             Landlord landlord = landlordDao.getLandInfoByTele(tele);
             //    获取token

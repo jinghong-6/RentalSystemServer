@@ -141,7 +141,7 @@ public class ConsumerServiceImpl implements ConsumerService {
     // 通过账号获取密码
     @Override
     public Result userLogin(String tele,String pwd) {
-        if (consumerDao.getPwdByTele(tele).equals(pwd)){
+        if (consumerDao.getPwdByTele(tele) != null && consumerDao.getPwdByTele(tele).equals(pwd)){
             //    获取用户信息
             Consumer consumer = consumerDao.getUserInfoByTele(tele);
             //    获取token
