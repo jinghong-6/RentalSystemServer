@@ -73,7 +73,8 @@ public interface OrderEndDao {
             "from " +
             "order_end " +
             "where " +
-            "consumer_id = #{consumer_id}")
+            "consumer_id = #{consumer_id} " +
+            "ORDER BY order_close_time DESC")
     List<Map<String, Object>> getOrderByConsumerId(String consumer_id);
 
     @Select("select " +
@@ -82,8 +83,9 @@ public interface OrderEndDao {
             "from " +
             "order_end " +
             "where " +
-            "landlord_id = #{landlord_id}")
-    public List<Map<String, Object>> getOrderByLandlordId(String landlord_id);
+            "landlord_id = #{landlord_id} " +
+            "ORDER BY order_close_time DESC")
+    List<Map<String, Object>> getOrderByLandlordId(String landlord_id);
 
     @Select("SELECT DATE_FORMAT(begin_time, '%Y-%m') AS month, COUNT(*) AS count,SUM(CAST(price_all AS SIGNED)) AS total_price " +
             "FROM ( " +
