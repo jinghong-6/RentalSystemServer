@@ -63,16 +63,32 @@ public class RentalInterceptor implements HandlerInterceptor {
                 // 执行login的校验逻辑
                 Date expiresAt = decodedJWT.getExpiresAt();
                 Date currentTime = new Date();
-//                String tele = decodedJWT.getClaim("tele").asString();
                 // 判断token是否过期
-                if (currentTime.after(expiresAt)){
+                if (currentTime.after(expiresAt)) {
                     sendTokenTimeOutResponse(response);
                     return false;
-                }else {
+                } else {
                     // 判断token是否正确
-                    if (verify(token)){
+                    if (verify(token)) {
                         return true;
-                    }else {
+                    } else {
+                        sendErrorResponse(response);
+                        return false;
+                    }
+                }
+            } else if ("admin".equals(tokenType)) {
+                // 执行login的校验逻辑
+                Date expiresAt = decodedJWT.getExpiresAt();
+                Date currentTime = new Date();
+                // 判断token是否过期
+                if (currentTime.after(expiresAt)) {
+                    sendTokenTimeOutResponse(response);
+                    return false;
+                } else {
+                    // 判断token是否正确
+                    if (verify(token)) {
+                        return true;
+                    } else {
                         sendErrorResponse(response);
                         return false;
                     }
@@ -82,10 +98,14 @@ public class RentalInterceptor implements HandlerInterceptor {
                 return false;
             }
         } else {
-            if (request.getParameter("tele") != null && request.getParameter("pwd") != null){
+            if (request.getParameter("tele") != null && request.getParameter("pwd") != null) {
                 System.out.println("访问登录接口");
                 return true;
-            }else {
+            }
+            if (request.getParameter("Account") != null && request.getParameter("pwd") != null) {
+                System.out.println("访问登录接口");
+                return true;
+            } else {
                 sendErrorResponse(response);
                 return false;
             }
