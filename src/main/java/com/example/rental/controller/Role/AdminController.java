@@ -13,10 +13,13 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @PostMapping("Login")
+    @PostMapping("/Login")
     public Result userLogin(String Account, String pwd){
         return adminService.AdminLogin(Account,pwd);
     }
 
-
+    @PostMapping("/Info/getAdminInfo")
+    public Result getAdminInfo(String Account){
+        return adminService.getAdminInfo(Account);
+    }
 }
