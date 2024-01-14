@@ -155,7 +155,7 @@ public class ConsumerServiceImpl implements ConsumerService {
 
             return new Result(Code.SEARCH_OK,json);
         }else {
-            return new Result(Code.SEARCH_ERR,500);
+            return new Result(Code.SEARCH_ERR,"登录失败");
         }
     }
 

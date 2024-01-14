@@ -26,6 +26,22 @@ public class JWTUtils {
         JWTUtils.expireTime = expireTime;
     }
 
+    //    登录后admin的token
+    public static String getAdminToken(String userType, String username) {
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.MINUTE, 60);
+
+        JWTCreator.Builder builder = JWT.create();
+
+        Map<String, String> payload = new HashMap<>();
+        payload.put("tokenType", "admin");
+        payload.put("name", username);
+        payload.put("userType", userType);
+        payload.forEach(builder::withClaim);
+        String token = builder.withExpiresAt(instance.getTime()).sign(Algorithm.HMAC256(SING));
+        return token;
+    }
+
     //    登录后access Token，短token
     public static String getLoginAccessToken(String tele, String userType, String username) {
         Calendar instance = Calendar.getInstance();
