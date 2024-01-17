@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -94,10 +95,10 @@ public class OrderController {
                 orderNopay.setPrice((orderHouse.getPrice()));
                 orderNopay.setPrice_all(AllPrice);
                 // 将 String 直接转换为 double
-                double allPriceDouble = Double.parseDouble(AllPrice);
-                double adminMoney = allPriceDouble * 0.01;
+                BigDecimal allPriceBigDecimal = new BigDecimal(AllPrice);
+                BigDecimal adminMoney = allPriceBigDecimal.multiply(new BigDecimal("0.01"));
                 orderNopay.setAdmin_money(String.valueOf(adminMoney));
-                orderNopay.setLandlord_money(String.valueOf(allPriceDouble - adminMoney));
+                orderNopay.setLandlord_money(String.valueOf(allPriceBigDecimal.subtract(adminMoney)));
                 orderNopay.setOrder_id(generateOrderNumber());
                 orderNopay.setOrder_begin_time(currentDateTime);
                 orderNopay.setOrder_end_time(newDateTime);
