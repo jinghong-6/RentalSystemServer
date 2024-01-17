@@ -43,8 +43,8 @@ public interface OrderNopayDao {
 
     @Insert("insert into order_nopay " +
             "values(" +
-            "#{id},#{uuid},#{order_id},#{consumer_id},#{landlord_id},#{house_id},#{price_all},#{price}," +
-            "#{begin_time},#{end_time},#{people_num},#{order_begin_time},#{order_end_time},#{order_status}" +
+            "#{id},#{uuid},#{order_id},#{consumer_id},#{landlord_id},#{house_id},#{price_all},#{landlord_money},#{admin_money}," +
+            "#{price},#{begin_time},#{end_time},#{people_num},#{order_begin_time},#{order_end_time},#{order_status}" +
             ")")
     boolean addOrder(OrderNopay orderNopay);
 

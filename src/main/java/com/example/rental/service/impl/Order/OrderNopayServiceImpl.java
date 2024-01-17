@@ -221,8 +221,7 @@ public class OrderNopayServiceImpl implements OrderNopayService {
         Result result = orderRollbackService.moveDataToOrderCompleteAndDeleteDataFromOrderNopay(uuid,consumerId,landlordId,newMoney,OrderPrice);
         if (result.getCode().toString().equals("901")){
             // 操作成功
-            consumerAlertService.addConsumerAlert(
-                    "0",uuid);
+            consumerAlertService.addConsumerAlert("0",uuid);
         }
         return result;
     }

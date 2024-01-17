@@ -8,7 +8,7 @@ import java.util.Map;
 @Mapper
 public interface OrderCompleteDao {
     @Select("select * from order_complete where uuid = #{uuid}")
-    Map<String,Object> getCompleteOrderByUuid(String uuid);
+    Map<String, Object> getCompleteOrderByUuid(String uuid);
 
     @Select("select " +
             "uuid,house_id,landlord_id,price_all,begin_time,end_time,people_num,order_begin_time,order_end_time,order_pay_time " +
@@ -31,10 +31,10 @@ public interface OrderCompleteDao {
 
     @Insert("INSERT INTO " +
             "order_complete " +
-            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time) " +
             "SELECT " +
-            "uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time " +
             "FROM " +
             "order_nopay " +

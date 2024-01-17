@@ -8,10 +8,10 @@ import java.util.Map;
 @Mapper
 public interface OrderEndDao {
     @Select("select * from order_end where uuid = #{uuid}")
-    Map<String,Object> getEndOrderByUuid(String uuid);
+    Map<String, Object> getEndOrderByUuid(String uuid);
 
     @Select("select uuid,grades from order_end where house_id = #{houseId} order by order_close_time desc")
-    List<Map<String,String>> getUuidByHouseId(String houseId);
+    List<Map<String, String>> getUuidByHouseId(String houseId);
 
     @Select("select house_id from order_end where consumer_id = #{consumer_id}")
     List<String> getHouseIdByConsumerId(String consumerId);
@@ -23,13 +23,13 @@ public interface OrderEndDao {
             "COUNT(CASE WHEN order_status = '0' THEN 1 END) AS OrderEndNum, " +
             "COUNT(CASE WHEN order_status != '0' THEN 1 END) AS OrderOtherNum " +
             "FROM order_end where consumer_id = #{consumer_id}")
-    Map<String,String> getOrderEndNumByConsumerId(String consumer_id);
+    Map<String, String> getOrderEndNumByConsumerId(String consumer_id);
 
     @Select("SELECT " +
             "COUNT(CASE WHEN order_status = '0' THEN 1 END) AS OrderEndNum, " +
             "COUNT(CASE WHEN order_status != '0' THEN 1 END) AS OrderOtherNum " +
             "FROM order_end where landlord_id = #{landlord_id}")
-    Map<String,String> getOrderEndNumByLandLordId(String consumer_id);
+    Map<String, String> getOrderEndNumByLandLordId(String consumer_id);
 
     @Select("select " +
             "uuid,house_id,landlord_id,price_all,begin_time,end_time,people_num," +
@@ -39,7 +39,7 @@ public interface OrderEndDao {
             "where " +
             "consumer_id = #{ConsumerId} and grades = #{grades} " +
             "ORDER BY order_close_time DESC")
-    List<Map<String, Object>> getNotRatedCommentOrderByConsumerId(@Param("ConsumerId") String ConsumerId,@Param("grades") String grades);
+    List<Map<String, Object>> getNotRatedCommentOrderByConsumerId(@Param("ConsumerId") String ConsumerId, @Param("grades") String grades);
 
     @Select("select " +
             "uuid,house_id,landlord_id,price_all,begin_time,end_time,people_num," +
@@ -59,7 +59,7 @@ public interface OrderEndDao {
             "where " +
             "landlord_id = #{LandlordId} and grades = #{grades} " +
             "ORDER BY order_close_time DESC")
-    List<Map<String, Object>> getNotRatedCommentOrderByLandlordId(@Param("LandlordId") String LandlordId,@Param("grades") String grades);
+    List<Map<String, Object>> getNotRatedCommentOrderByLandlordId(@Param("LandlordId") String LandlordId, @Param("grades") String grades);
 
     @Select("select " +
             "uuid,house_id,landlord_id,price_all,begin_time,end_time,people_num," +
@@ -123,10 +123,10 @@ public interface OrderEndDao {
 
     @Insert("INSERT INTO " +
             "order_end " +
-            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time,order_status) " +
             "SELECT " +
-            "uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time,order_status " +
             "FROM " +
             "order_nopay " +
@@ -135,10 +135,10 @@ public interface OrderEndDao {
 
     @Insert("INSERT INTO " +
             "order_end " +
-            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time,order_pay_time,order_close_time,order_status) " +
             "SELECT " +
-            "uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time,order_pay_time,order_end_time,order_status " +
             "FROM " +
             "order_complete " +
@@ -147,10 +147,10 @@ public interface OrderEndDao {
 
     @Insert("INSERT INTO " +
             "order_end " +
-            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "(uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time,order_pay_time,order_confirm_time) " +
             "SELECT " +
-            "uuid, order_id, consumer_id, landlord_id, house_id, price_all, price, " +
+            "uuid, order_id, consumer_id, landlord_id, house_id, price_all,landlord_money,admin_money, price, " +
             "begin_time, end_time, people_num, order_begin_time,order_pay_time,order_confirm_time " +
             "FROM " +
             "order_begin " +
