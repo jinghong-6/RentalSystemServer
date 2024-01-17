@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -209,16 +210,17 @@ public class OrderNopayServiceImpl implements OrderNopayService {
             return new Result(Code.SEARCH_ERR, "密码错误");
         }
         //  验证余额
-        long OrderPrice = Long.parseLong(String.valueOf(orderNoPay.get("price_all")));
-        long ConsumerMoney = Long.parseLong(consumerDao.getMoneyById(consumerId));
-        if (ConsumerMoney < OrderPrice) {
+        BigDecimal orderPrice = new BigDecimal(String.valueOf(orderNoPay.get("price_all")));
+        BigDecimal consumerMoney = new BigDecimal(consumerDao.getMoneyById(consumerId));
+        if (consumerMoney.compareTo(orderPrice) < 0) {
             return new Result(Code.SAVE_ERR, "余额不足");
         }
-        long newMoney = ConsumerMoney - OrderPrice;
+
+        BigDecimal newMoney = consumerMoney.subtract(orderPrice);
 
         //  房东id
         String landlordId = String.valueOf(orderNoPay.get("landlord_id"));
-        Result result = orderRollbackService.moveDataToOrderCompleteAndDeleteDataFromOrderNopay(uuid,consumerId,landlordId,newMoney,OrderPrice);
+        Result result = orderRollbackService.moveDataToOrderCompleteAndDeleteDataFromOrderNopay(uuid,consumerId,landlordId,newMoney,orderPrice);
         if (result.getCode().toString().equals("901")){
             // 操作成功
             consumerAlertService.addConsumerAlert("0",uuid);

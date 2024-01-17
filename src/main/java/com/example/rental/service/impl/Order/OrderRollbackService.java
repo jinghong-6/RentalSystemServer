@@ -1,6 +1,7 @@
 package com.example.rental.service.impl.Order;
 
 import com.example.rental.dao.Order.*;
+import com.example.rental.dao.Role.AdminDao;
 import com.example.rental.dao.Role.ConsumerDao;
 import com.example.rental.dao.Role.LandlordDao;
 import com.example.rental.service.impl.Alert.ConsumerAlertServiceImpl;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -37,6 +39,9 @@ public class OrderRollbackService {
 
     @Autowired
     private LandlordDao landlordDao;
+
+    @Autowired
+    private AdminDao adminDao;
 
     @Autowired
     private ConsumerAlertServiceImpl consumerAlertServiceImpl;
@@ -130,7 +135,7 @@ public class OrderRollbackService {
 
     //  将未支付订单改变为待确认的事务操作
     @Transactional
-    public Result moveDataToOrderCompleteAndDeleteDataFromOrderNopay(String uuid,String consumerId,String landlordId,Long newMoney,Long OrderPrice) {
+    public Result moveDataToOrderCompleteAndDeleteDataFromOrderNopay(String uuid,String consumerId,String landlordId,BigDecimal newMoney,BigDecimal OrderPrice) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
@@ -151,14 +156,13 @@ public class OrderRollbackService {
             boolean consumerMoneyResult = consumerDao.UpdateConsumerMoney(consumerId, String.valueOf(newMoney));
             //  更新支付状态
             boolean consumerPayStatusResult = consumerDao.ResetConsumerPayStatus(consumerId);
-            //  商家收款
-            String nowLandMoney = landlordDao.getLandMoneyById(landlordId).get("money");
-            Long newLandMoney = Long.parseLong(nowLandMoney) + OrderPrice;
-            boolean landlordGetMoneyResult = landlordDao.UpdateLandlordMoney(String.valueOf(newLandMoney),landlordId);
-            String nowLandMoney2 = landlordDao.getLandMoneyById(landlordId).get("money");
-            System.out.println("nowLandMoney2" + nowLandMoney2);
+            //  后台收款
+            String nowAdminMoney = adminDao.getAdminInfoByAccount("1397775326").getMoney();
+            BigDecimal nowAdminMoneyBigDecimal = new BigDecimal(nowAdminMoney);
+            BigDecimal newAdminMoneyBigDecimal = nowAdminMoneyBigDecimal.add(OrderPrice);
+            boolean adminGetMoneyResult = adminDao.updateAdminMoney(String.valueOf(newAdminMoneyBigDecimal));
             // 根据需要处理结果
-            if (moveResult && deleteResult && updateTimeResult && consumerMoneyResult && consumerPayStatusResult && landlordGetMoneyResult) {
+            if (moveResult && deleteResult && updateTimeResult && consumerMoneyResult && consumerPayStatusResult && adminGetMoneyResult) {
                 return new Result(Code.SAVE_OK, "订单状态更改成功");
             } else {
                 // 操作失败，手动抛出异常触发回滚

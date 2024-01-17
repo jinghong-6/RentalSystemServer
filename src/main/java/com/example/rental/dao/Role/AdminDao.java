@@ -17,7 +17,7 @@ public interface AdminDao {
             "admin_account = #{Account}")
     Admin getAdminInfoByAccount(String Account);
 
-    @Update("update admin set money = '#{money}'")
+    @Update("update admin set money = #{money}")
     boolean updateAdminMoney(String money);
 
 
