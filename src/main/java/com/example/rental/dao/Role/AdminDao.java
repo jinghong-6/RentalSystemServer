@@ -19,6 +19,4 @@ public interface AdminDao {
 
     @Update("update admin set money = #{money}")
     boolean updateAdminMoney(String money);
-
-
 }

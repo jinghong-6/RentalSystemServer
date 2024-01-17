@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderRollbackService {
@@ -57,7 +59,7 @@ public class OrderRollbackService {
             boolean changeOrderStatusResult = orderNopayDao.updateOrderStatusToEnd(uuid);
             boolean moveResult = orderEndDao.moveOrderNopayToOrderEnd(uuid);
             boolean deleteResult = orderNopayDao.deleteDataFromOrderNopay(uuid);
-            boolean EndTimeResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter),uuid);
+            boolean EndTimeResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter), uuid);
 
             // 根据需要处理结果
             if (moveResult && deleteResult && changeOrderStatusResult && EndTimeResult) {
@@ -76,7 +78,7 @@ public class OrderRollbackService {
 
     //  待确认订单超时归档和商家取消订单的事务操作
     @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
-    public Result moveOrderCompleteToOrderEndFromOrderComplete(String uuid,String type) {
+    public Result moveOrderCompleteToOrderEndFromOrderComplete(String uuid, String type) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
@@ -85,16 +87,16 @@ public class OrderRollbackService {
             boolean changeOrderStatusResult = orderCompleteDao.updateOrderStatusToEnd(uuid);
             boolean moveResult = orderEndDao.moveCompleteToOrderEnd(uuid);
             boolean deleteResult = orderCompleteDao.deleteDataFromOrderComplete(uuid);
-            boolean EndTimeResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter),uuid);
+            boolean EndTimeResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter), uuid);
 
             // 根据需要处理结果
             if (moveResult && deleteResult && changeOrderStatusResult && EndTimeResult) {
                 // 操作成功
-                if (type.equals("0")){
+                if (type.equals("0")) {
                     System.out.println("待确认订单超时归档成功");
                 }
-                if (type.equals("1")){
-                    consumerAlertServiceImpl.addConsumerAlert("4",uuid);
+                if (type.equals("1")) {
+                    consumerAlertServiceImpl.addConsumerAlert("4", uuid);
                 }
                 return new Result(Code.SAVE_OK, "订单状态更改成功");
             } else {
@@ -120,7 +122,7 @@ public class OrderRollbackService {
             if (moveResult && deleteResult) {
                 // 操作成功
                 System.out.println("待开始订单转化为开始订单成功");
-                consumerAlertServiceImpl.addConsumerAlert("3",uuid);
+                consumerAlertServiceImpl.addConsumerAlert("3", uuid);
                 return true;
             } else {
                 // 操作失败，手动抛出异常触发回滚
@@ -135,7 +137,7 @@ public class OrderRollbackService {
 
     //  将未支付订单改变为待确认的事务操作
     @Transactional
-    public Result moveDataToOrderCompleteAndDeleteDataFromOrderNopay(String uuid,String consumerId,String landlordId,BigDecimal newMoney,BigDecimal OrderPrice) {
+    public Result moveDataToOrderCompleteAndDeleteDataFromOrderNopay(String uuid, String consumerId, String landlordId, BigDecimal newMoney, BigDecimal OrderPrice) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
@@ -151,7 +153,7 @@ public class OrderRollbackService {
             // 在同一个事务中执行多个操作
             boolean moveResult = orderCompleteDao.moveDataToOrderComplete(uuid);
             boolean deleteResult = orderNopayDao.deleteDataFromOrderNopay(uuid);
-            boolean updateTimeResult = orderCompleteDao.updateOrderPayTimeAndEndTime(currentTime.format(formatter),sdf.format(calendar.getTime()),uuid);
+            boolean updateTimeResult = orderCompleteDao.updateOrderPayTimeAndEndTime(currentTime.format(formatter), sdf.format(calendar.getTime()), uuid);
             //  扣款
             boolean consumerMoneyResult = consumerDao.UpdateConsumerMoney(consumerId, String.valueOf(newMoney));
             //  更新支付状态
@@ -185,12 +187,12 @@ public class OrderRollbackService {
             // 在同一个事务中执行两个操作
             boolean moveResult = orderCompletedDao.moveOrderCompleteToOrderCompleted(uuid);
             boolean deleteResult = orderCompleteDao.deleteDataFromOrderComplete(uuid);
-            boolean updateConfirmResult = orderCompletedDao.updateOrderConfirmTime(currentTime.format(formatter),uuid);
+            boolean updateConfirmResult = orderCompletedDao.updateOrderConfirmTime(currentTime.format(formatter), uuid);
 
             // 根据需要处理结果
             if (moveResult && deleteResult && updateConfirmResult) {
                 // 操作成功
-                consumerAlertServiceImpl.addConsumerAlert("1",uuid);
+                consumerAlertServiceImpl.addConsumerAlert("1", uuid);
                 return new Result(Code.UPDATE_OK, "订单状态更改成功");
             } else {
                 // 操作失败，手动抛出异常触发回滚
@@ -207,19 +209,30 @@ public class OrderRollbackService {
     @Transactional
     public boolean moveBeginToEndFromOrderBegin(String uuid) {
         try {
+            //根据uuid获取订单信息
+            Map<String,Object> order = orderBeginDao.getBeginOrderByUuid(uuid);
+            String landlordId = String.valueOf(order.get("landlord_id"));
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             // 在同一个事务中执行两个操作
             boolean moveResult = orderEndDao.moveBeginToOrderEnd(uuid);
             boolean deleteResult = orderBeginDao.deleteDataFromOrderBegin(uuid);
-            boolean updateConfirmResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter),uuid);
+            boolean updateConfirmResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter), uuid);
+
+            //获取抽成后的money
+            BigDecimal InsertMoney = new BigDecimal(String.valueOf(order.get("landlord_money")));
+            //获取商家money
+            BigDecimal landlordMoney = new BigDecimal(landlordDao.getLandMoneyById(landlordId).get("money"));
+            //添加进商家
+            BigDecimal newLandlordMoney = landlordMoney.add(InsertMoney);
+            boolean updateMoney = landlordDao.UpdateLandlordMoney(String.valueOf(newLandlordMoney),landlordId);
 
             // 根据需要处理结果
-            if (moveResult && deleteResult && updateConfirmResult) {
+            if (moveResult && deleteResult && updateConfirmResult && updateMoney) {
                 // 操作成功
                 System.out.println("开始订单归档成功");
-                consumerAlertServiceImpl.addConsumerAlert("2",uuid);
+                consumerAlertServiceImpl.addConsumerAlert("2", uuid);
                 return true;
             } else {
                 // 操作失败，手动抛出异常触发回滚

@@ -29,7 +29,7 @@ public interface LandlordDao {
     Map<String, String> getLandImgAndNameById(String id);
 
     @Select("select landlord_name,introduce,register_time,img_url,tele from landlord where id = #{id}")
-    public Map<String, String> getLandlordById(String id);
+    Map<String, String> getLandlordById(String id);
 
     @Select("select money from landlord where id = #{id}")
     Map<String, String> getLandMoneyById(String id);
