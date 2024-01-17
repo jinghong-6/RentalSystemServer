@@ -12,6 +12,8 @@ public class OrderEnd {
     private String consumer_id;
     private String landlord_id;
     private String price_all;
+    private String landlord_money;
+    private String admin_money;
     private String house_id;
     private String price;
     private String begin_time;
