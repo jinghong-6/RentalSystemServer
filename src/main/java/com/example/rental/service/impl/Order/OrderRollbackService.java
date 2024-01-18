@@ -80,6 +80,9 @@ public class OrderRollbackService {
     @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
     public Result moveOrderCompleteToOrderEndFromOrderComplete(String uuid, String type) {
         try {
+            //根据uuid获取订单信息
+            Map<String, Object> order = orderCompleteDao.getCompleteOrderByUuid(uuid);
+
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -89,24 +92,49 @@ public class OrderRollbackService {
             boolean deleteResult = orderCompleteDao.deleteDataFromOrderComplete(uuid);
             boolean EndTimeResult = orderEndDao.updateOrderCloseTime(currentTime.format(formatter), uuid);
 
-            // 根据需要处理结果
-            if (moveResult && deleteResult && changeOrderStatusResult && EndTimeResult) {
-                // 操作成功
-                if (type.equals("0")) {
-                    System.out.println("待确认订单超时归档成功");
+            //获取总的money
+            BigDecimal allPrice = new BigDecimal(String.valueOf(order.get("price_all")));
+            //获取管理员money
+            BigDecimal adminMoney = new BigDecimal(adminDao.getAdminInfoByAccount("1397775326").getMoney());
+            //从管理员扣除
+            if (adminMoney.compareTo(allPrice) >= 0) {
+                // 资金充足，从adminMoney中扣除InsertMoney
+                BigDecimal newAdminMoney = adminMoney.subtract(allPrice);
+                // 更新管理员的money
+                boolean UpdateAdminMoneyResult = adminDao.updateAdminMoney(String.valueOf(newAdminMoney));
+
+                String consumerId =String.valueOf(order.get("consumer_id"));
+                //获取用户余额
+                BigDecimal consumerMoney = new BigDecimal(consumerDao.getMoneyById(consumerId));
+                //退款加上用户余额
+                BigDecimal newConsumerMoney = consumerMoney.add(allPrice);
+                //更新用户余额
+                boolean UpdateConsumerMoneyResult = consumerDao.UpdateConsumerMoney(consumerId, String.valueOf(newConsumerMoney));
+
+                // 根据需要处理结果
+                if (moveResult && deleteResult && changeOrderStatusResult && EndTimeResult && UpdateAdminMoneyResult && UpdateConsumerMoneyResult) {
+                    // 操作成功
+                    if (type.equals("0")) {
+                        System.out.println("待确认订单超时归档成功");
+                    }
+                    if (type.equals("1")) {
+                        consumerAlertServiceImpl.addConsumerAlert("4", uuid);
+                    }
+                    return new Result(Code.SAVE_OK, "订单状态更改成功");
+                } else {
+                    // 操作失败，手动抛出异常触发回滚
+                    throw new RuntimeException("操作失败，触发回滚");
                 }
-                if (type.equals("1")) {
-                    consumerAlertServiceImpl.addConsumerAlert("4", uuid);
-                }
-                return new Result(Code.SAVE_OK, "订单状态更改成功");
             } else {
                 // 操作失败，手动抛出异常触发回滚
                 throw new RuntimeException("操作失败，触发回滚");
             }
+
+
         } catch (Exception e) {
-            // 处理异常，如果需要的话
             e.printStackTrace();
-            return new Result(Code.SAVE_ERR, "订单状态更改失败");
+            // 操作失败，手动抛出异常触发回滚
+            throw new RuntimeException("操作失败，触发回滚");
         }
     }
 
@@ -136,7 +164,7 @@ public class OrderRollbackService {
     }
 
     //  将未支付订单改变为待确认的事务操作
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
     public Result moveDataToOrderCompleteAndDeleteDataFromOrderNopay(String uuid, String consumerId, String landlordId, BigDecimal newMoney, BigDecimal OrderPrice) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
@@ -178,7 +206,7 @@ public class OrderRollbackService {
     }
 
     //  将待确认订单改变为未开始的事务操作
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
     public Result moveCompleteToCompletedFromOrderComplete(String uuid) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
@@ -206,11 +234,11 @@ public class OrderRollbackService {
     }
 
     //  订单正常结束的事务操作
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
     public boolean moveBeginToEndFromOrderBegin(String uuid) {
         try {
             //根据uuid获取订单信息
-            Map<String,Object> order = orderBeginDao.getBeginOrderByUuid(uuid);
+            Map<String, Object> order = orderBeginDao.getBeginOrderByUuid(uuid);
             String landlordId = String.valueOf(order.get("landlord_id"));
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
@@ -226,7 +254,7 @@ public class OrderRollbackService {
             BigDecimal landlordMoney = new BigDecimal(landlordDao.getLandMoneyById(landlordId).get("money"));
             //添加进商家
             BigDecimal newLandlordMoney = landlordMoney.add(InsertMoney);
-            boolean updateMoney = landlordDao.UpdateLandlordMoney(String.valueOf(newLandlordMoney),landlordId);
+            boolean updateMoney = landlordDao.UpdateLandlordMoney(String.valueOf(newLandlordMoney), landlordId);
 
             // 根据需要处理结果
             if (moveResult && deleteResult && updateConfirmResult && updateMoney) {

@@ -223,7 +223,6 @@ public class HouseServiceImpl implements HouseService {
         String houseKey = "house" + houseId;
         Object data = redisTemplate.opsForValue().get(houseKey);
         if (data != null) {
-            System.out.println("6666");
             return (Map<String, Object>) data;
         } else {
             Map<String, Object> map = new HashMap<>();
