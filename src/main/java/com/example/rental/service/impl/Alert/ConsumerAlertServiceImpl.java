@@ -221,6 +221,7 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             String ConsumerId = Order.get("consumer_id").toString();
             String OrderBeginTime = Order.get("begin_time").toString();
             String OrderEndTime = Order.get("end_time").toString();
+            String backMoney = Order.get("price_all").toString();
 
             House house = houseDao.getHouseById(HouseId);
 
@@ -232,7 +233,7 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
-                            ",订单已被房东取消，请挑选其他民宿吧。"
+                            ",订单已被取消，退款金额为" + backMoney + "，请挑选其他民宿吧。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
         }

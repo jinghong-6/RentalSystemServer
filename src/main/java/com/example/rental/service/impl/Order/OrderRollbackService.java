@@ -48,9 +48,9 @@ public class OrderRollbackService {
     @Autowired
     private ConsumerAlertServiceImpl consumerAlertServiceImpl;
 
-    //  未支付订单超时归档的事务操作
+    //  未支付订单超时归档和取消待支付订单的事务操作
     @Transactional(rollbackFor = Exception.class)// 在发生任何异常时回滚事务
-    public boolean moveOrderNopayToOrderEndAndFromOrderNopay(String uuid) {
+    public boolean moveOrderNopayToOrderEndAndFromOrderNopay(String uuid,String flag) {
         try {
             LocalDateTime currentTime = LocalDateTime.now();
             // 定义日期时间格式化器，用于解析目标时间字符串
@@ -64,7 +64,12 @@ public class OrderRollbackService {
             // 根据需要处理结果
             if (moveResult && deleteResult && changeOrderStatusResult && EndTimeResult) {
                 // 操作成功
-                System.out.println("未支付订单超时归档成功");
+                if (flag.equals("0")){
+                    System.out.println("未支付订单超时归档成功");
+                }
+                if (flag.equals("1")){
+                    System.out.println("待支付订单取消成功");
+                }
                 return true;
             } else {
                 // 操作失败，手动抛出异常触发回滚

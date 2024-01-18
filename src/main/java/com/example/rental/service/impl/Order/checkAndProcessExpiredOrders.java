@@ -40,7 +40,7 @@ public class checkAndProcessExpiredOrders {
         List<String> processExpiredNopayOrders = orderNopayDao.getAllProcessExpiredOrdersByDateTime(currentTime.format(formatter));
         for (String uuid : processExpiredNopayOrders){
             try {
-                boolean NoPaySuccess = orderRollbackService.moveOrderNopayToOrderEndAndFromOrderNopay(uuid);
+                boolean NoPaySuccess = orderRollbackService.moveOrderNopayToOrderEndAndFromOrderNopay(uuid,"0");
                 if (!NoPaySuccess) {
                     // 处理操作失败的情况，例如记录错误日志
                     System.err.println("订单超时处理失败: " + uuid);

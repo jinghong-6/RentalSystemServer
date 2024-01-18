@@ -18,4 +18,7 @@ public interface OrderNopayService {
 
     //  支付订单
     public Result payOrderByPwd(String uuid,String pwd);
+
+    //  取消订单
+    Result CancelNopayOrder(String uuid);
 }

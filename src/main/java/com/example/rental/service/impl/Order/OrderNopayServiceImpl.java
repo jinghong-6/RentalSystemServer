@@ -228,6 +228,16 @@ public class OrderNopayServiceImpl implements OrderNopayService {
         return result;
     }
 
+    @Override
+    public Result CancelNopayOrder(String uuid) {
+        if (orderRollbackService.moveOrderNopayToOrderEndAndFromOrderNopay(uuid,"1")){
+            return new Result(Code.UPDATE_OK,"取消成功");
+        }else {
+            return new Result(Code.UPDATE_ERR,"取消失败");
+        }
+
+    }
+
     private boolean isOrderExpired(LocalDateTime orderEndTime) {
         LocalDateTime currentTime = LocalDateTime.now();
         return currentTime.isAfter(orderEndTime);
