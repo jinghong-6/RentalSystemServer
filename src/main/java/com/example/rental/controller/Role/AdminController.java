@@ -22,4 +22,9 @@ public class AdminController {
     public Result getAdminInfo(String Account){
         return adminService.getAdminInfo(Account);
     }
+
+    @PostMapping("/getAllInfo")
+    public Result getAllInfo(){
+        return adminService.getAllInfo();
+    }
 }

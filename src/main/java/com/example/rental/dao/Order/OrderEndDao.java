@@ -106,17 +106,17 @@ public interface OrderEndDao {
             "GROUP BY month;")
     List<Map<String, String>> getOrderDateCountByConsumerId(String ConsumerId);
 
-    @Select("SELECT DATE_FORMAT(begin_time, '%Y-%m') AS month, COUNT(*) AS count,SUM(CAST(price_all AS SIGNED)) AS total_price " +
+    @Select("SELECT DATE_FORMAT(begin_time, '%Y-%m') AS month, COUNT(*) AS count,SUM(CAST(landlord_money AS DECIMAL(10,2))) AS total_price " +
             "FROM ( " +
-            "    SELECT begin_time,price_all FROM order_begin where landlord_id = #{landlord_id} " +
+            "    SELECT begin_time,CAST(landlord_money AS DECIMAL(10,2)) AS landlord_money FROM order_begin where landlord_id = #{landlord_id} " +
             "    UNION ALL " +
-            "    SELECT begin_time,price_all FROM order_complete where landlord_id = #{landlord_id} " +
+            "    SELECT begin_time,CAST(landlord_money AS DECIMAL(10,2)) AS landlord_money FROM order_complete where landlord_id = #{landlord_id} " +
             "    UNION ALL " +
-            "    SELECT begin_time,price_all FROM order_completed where landlord_id = #{landlord_id} " +
+            "    SELECT begin_time,CAST(landlord_money AS DECIMAL(10,2)) AS landlord_money FROM order_completed where landlord_id = #{landlord_id} " +
             "    UNION ALL " +
-            "    SELECT begin_time,price_all FROM order_nopay where landlord_id = #{landlord_id} " +
+            "    SELECT begin_time,CAST(landlord_money AS DECIMAL(10,2)) AS landlord_money FROM order_nopay where landlord_id = #{landlord_id} " +
             "    UNION ALL " +
-            "    SELECT begin_time,price_all FROM order_end where landlord_id = #{landlord_id} " +
+            "    SELECT begin_time,CAST(landlord_money AS DECIMAL(10,2)) AS landlord_money FROM order_end where landlord_id = #{landlord_id} " +
             ") AS combined_tables " +
             "GROUP BY month;")
     List<Map<String, String>> getOrderDateCountByLandlordId(String landlord_id);
