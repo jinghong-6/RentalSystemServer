@@ -55,6 +55,9 @@ public interface AdminDao {
             "GROUP BY month")
     List<Map<String, String>> getOrderDateCount();
 
+    @Select("select id,landlord_id,house_name,price,firstImg,begin_time,end_time,type,max_num,price,house_status from house")
+    List<Map<String, Object>> getHouseByAdmin();
+
     @Update("update admin set money = #{money}")
     boolean updateAdminMoney(String money);
 }

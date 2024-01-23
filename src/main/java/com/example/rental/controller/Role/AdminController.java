@@ -23,6 +23,16 @@ public class AdminController {
         return adminService.getAdminInfo(Account);
     }
 
+    @PostMapping("/getHouse")
+    public Result getAdminHouse(){
+        return adminService.getHouseByAdmin();
+    }
+
+    @PostMapping("/UpdateHouse")
+    public Result UpdateAdminHouse(String status,String id){
+        return adminService.UpdateHouseStatus(status,id);
+    }
+
     @PostMapping("/getAllInfo")
     public Result getAllInfo(){
         return adminService.getAllInfo();

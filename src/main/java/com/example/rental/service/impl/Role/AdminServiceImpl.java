@@ -3,6 +3,7 @@ package com.example.rental.service.impl.Role;
 import com.alibaba.fastjson.JSONObject;
 import com.example.rental.dao.HouseDao;
 import com.example.rental.dao.Role.AdminDao;
+import com.example.rental.dao.Role.LandlordDao;
 import com.example.rental.domain.Role.Admin;
 import com.example.rental.service.Role.AdminService;
 import com.example.rental.utils.Code;
@@ -11,6 +12,8 @@ import com.example.rental.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +26,9 @@ public class AdminServiceImpl implements AdminService {
 
     @Autowired
     private HouseDao houseDao;
+
+    @Autowired
+    private LandlordDao landlordDao;
 
     @Override
     public Result getAdminInfo(String Account) {
@@ -72,6 +78,46 @@ public class AdminServiceImpl implements AdminService {
         map.put("OrderCount",OrderCount);
         map.put("AllPrice",AllPrice);
         return new Result(Code.SEARCH_OK,map);
+    }
+
+    @Override
+    public Result getHouseByAdmin() {
+        List<Map<String, Object>> HouseList = adminDao.getHouseByAdmin();
+        if (HouseList != null){
+            for (Map<String,Object> houseMap : HouseList){
+                String LandlordName = landlordDao.getLandImgAndNameById(String.valueOf(houseMap.get("landlord_id"))).get("landlord_name");
+                houseMap.put("LandlordName",LandlordName);
+            }
+            return new Result(Code.SEARCH_OK,HouseList);
+        }else {
+            return new Result(Code.SEARCH_ERR,"查找失败");
+        }
+    }
+
+    @Override
+    public Result UpdateHouseStatus(String status, String id) {
+        if (status.equals("0")){
+            // 获取当前日期
+            LocalDate currentDate = LocalDate.now();
+            // 定义日期格式
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            // 格式化日期
+            String formattedDate = currentDate.format(formatter);
+            List<String> overHouse = houseDao.getOverHouseList2(formattedDate,id);
+            if (overHouse.size() == 0){
+                boolean flag = houseDao.UpdateHouseStatusById(status,id);
+                if (flag){
+                    return new Result(Code.UPDATE_OK,"更新成功");
+                }
+            }
+        }
+        if (status.equals("2")){
+            boolean flag = houseDao.UpdateHouseStatusById(status,id);
+            if (flag){
+                return new Result(Code.UPDATE_OK,"更新成功");
+            }
+        }
+        return new Result(Code.UPDATE_ERR,"更新失败");
     }
 
     private Map<String, List<String>> getCountLists(List<String> houseIdList) {
