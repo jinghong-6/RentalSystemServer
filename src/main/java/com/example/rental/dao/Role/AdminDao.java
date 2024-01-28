@@ -36,7 +36,7 @@ public interface AdminDao {
             "from landlord")
     List<Landlord> getAllLandlord();
 
-    @Update("update consumer set consumer_status = #{status} where id = #{id}")
+    @Update("update landlord set landlord_status = #{status} where id = #{id}")
     boolean UpdateLandlordStatusById(@Param("status") String status, @Param("id") String id);
 
     @Select("SELECT " +
