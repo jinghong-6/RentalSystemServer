@@ -33,6 +33,26 @@ public class AdminController {
         return adminService.UpdateHouseStatus(status,id);
     }
 
+    @PostMapping("/getAllConsumer")
+    public Result getAllConsumer(){
+        return adminService.getAllConsumer();
+    }
+
+    @PostMapping("/updateConsumer")
+    public Result updateConsumerById(String status,String id){
+        return adminService.UpdateConsumerStatusById(status,id);
+    }
+
+    @PostMapping("/getAllLandlord")
+    public Result getAllLandlord(){
+        return adminService.getAllLandlord();
+    }
+
+    @PostMapping("/updateLandlord")
+    public Result updateLandlordById(String status,String id){
+        return adminService.UpdateLandlordStatusById(status,id);
+    }
+
     @PostMapping("/getAllInfo")
     public Result getAllInfo(){
         return adminService.getAllInfo();

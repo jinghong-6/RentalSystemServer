@@ -1,7 +1,10 @@
 package com.example.rental.dao.Role;
 
 import com.example.rental.domain.Role.Admin;
+import com.example.rental.domain.Role.Consumer;
+import com.example.rental.domain.Role.Landlord;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
@@ -19,6 +22,22 @@ public interface AdminDao {
             "where " +
             "admin_account = #{Account}")
     Admin getAdminInfoByAccount(String Account);
+
+    @Select("select " +
+            "id,tele,consumer_name,qq,wechat,province,county,img_url,consumer_status,money,register_time " +
+            "from consumer")
+    List<Consumer> getAllConsumer();
+
+    @Update("update consumer set consumer_status = #{status} where id = #{id}")
+    boolean UpdateConsumerStatusById(@Param("status") String status, @Param("id") String id);
+
+    @Select("select " +
+            "id,tele,landlord_name,qq,wechat,province,county,img_url,landlord_status,register_time " +
+            "from landlord")
+    List<Landlord> getAllLandlord();
+
+    @Update("update consumer set consumer_status = #{status} where id = #{id}")
+    boolean UpdateLandlordStatusById(@Param("status") String status, @Param("id") String id);
 
     @Select("SELECT " +
             "(SELECT COUNT(*) FROM order_begin) + " +

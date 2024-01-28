@@ -5,6 +5,8 @@ import com.example.rental.dao.HouseDao;
 import com.example.rental.dao.Role.AdminDao;
 import com.example.rental.dao.Role.LandlordDao;
 import com.example.rental.domain.Role.Admin;
+import com.example.rental.domain.Role.Consumer;
+import com.example.rental.domain.Role.Landlord;
 import com.example.rental.service.Role.AdminService;
 import com.example.rental.utils.Code;
 import com.example.rental.utils.JWTUtils;
@@ -118,6 +120,108 @@ public class AdminServiceImpl implements AdminService {
             }
         }
         return new Result(Code.UPDATE_ERR,"更新失败");
+    }
+
+    @Override
+    public Result getAllConsumer() {
+        List<Consumer> consumerList = adminDao.getAllConsumer();
+        if (consumerList != null){
+            return new Result(Code.SEARCH_OK,consumerList);
+        }else {
+            return new Result(Code.SEARCH_ERR,"未查询到用户");
+        }
+    }
+
+    /**
+     * 根据用户ID更新用户状态。
+     *
+     * @param status 用户状态，"1"表示封禁，"0"表示解封。
+     * @param id     用户ID。
+     * @return 更新结果的 {@link Result} 对象，包括操作状态码和消息。
+     */
+    @Override
+    public Result UpdateConsumerStatusById(String status, String id) {
+        // 操作类型
+        String operation;
+        // 成功消息
+        String successMessage;
+        // 失败消息
+        String errorMessage;
+
+        // 判断用户状态并设置相应的操作和消息
+        if ("1".equals(status)) {
+            operation = "封禁";
+            successMessage = "封禁成功";
+            errorMessage = "封禁失败";
+        } else if ("0".equals(status)) {
+            operation = "解封";
+            successMessage = "解封成功";
+            errorMessage = "解封失败";
+        } else {
+            // 非法状态
+            return new Result(Code.UPDATE_ERR, "操作失败：非法状态");
+        }
+
+        // 调用DAO层更新用户状态
+        boolean result = adminDao.UpdateConsumerStatusById(status, id);
+
+        // 根据更新结果返回相应的Result对象
+        if (result) {
+            return new Result(Code.UPDATE_OK, successMessage);
+        } else {
+            return new Result(Code.UPDATE_ERR, errorMessage);
+        }
+    }
+
+    @Override
+    public Result getAllLandlord() {
+        List<Landlord> landlordList = adminDao.getAllLandlord();
+        if (landlordList != null){
+            return new Result(Code.SEARCH_OK,landlordList);
+        }else {
+            return new Result(Code.SEARCH_ERR,"未查询到房东");
+        }
+    }
+
+    /**
+     * 根据用户ID更新房东状态。
+     *
+     * @param status 用户状态，"1"表示封禁，"0"表示解封。
+     * @param id     用户ID。
+     * @return 更新结果的 {@link Result} 对象，包括操作状态码和消息。
+     */
+    @Override
+    public Result UpdateLandlordStatusById(String status, String id) {
+        // 操作类型
+        String operation;
+        // 成功消息
+        String successMessage;
+        // 失败消息
+        String errorMessage;
+
+        // 判断用户状态并设置相应的操作和消息
+        if ("1".equals(status)) {
+            operation = "封禁";
+            successMessage = "封禁成功";
+            errorMessage = "封禁失败";
+        } else if ("0".equals(status)) {
+            operation = "解封";
+            successMessage = "解封成功";
+            errorMessage = "解封失败";
+        } else {
+            // 非法状态
+            return new Result(Code.UPDATE_ERR, "操作失败：非法状态");
+        }
+
+        // 调用DAO层更新用户状态
+        boolean result = adminDao.UpdateLandlordStatusById(status, id);
+
+        // 根据更新结果返回相应的Result对象
+        if (result) {
+            return new Result(Code.UPDATE_OK, successMessage);
+        } else {
+            return new Result(Code.UPDATE_ERR, errorMessage);
+        }
     }
 
     private Map<String, List<String>> getCountLists(List<String> houseIdList) {
