@@ -9,5 +9,5 @@ public class LandlordAlert {
     private String title;
     private String content;
     private String alert_status;
-    private String datetime;
+    private String create_time;
 }
