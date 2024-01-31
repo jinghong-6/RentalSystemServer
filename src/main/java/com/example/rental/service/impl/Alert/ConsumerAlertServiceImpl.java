@@ -9,12 +9,14 @@ import com.example.rental.service.Alert.ConsumerAlertService;
 import com.example.rental.utils.Code;
 import com.example.rental.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class ConsumerAlertServiceImpl implements ConsumerAlertService {
@@ -39,6 +41,9 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
     @Autowired
     OrderBeginDao orderBeginDao;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
     @Override
     /**
      * 根据消费者ID获取通知信息列表。
@@ -51,11 +56,19 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
      *           其中 Code 为 SEARCH_ERR，消息为"暂无通知"
      */
     public Result getAlertByConsumerId(String ConsumerId) {
-        List<Map<String, String>> AlertList = consumerAlertDao.getAlertListByConsumerId(ConsumerId);
-        if (AlertList.size() == 0) {
-            return new Result(Code.SEARCH_ERR, "暂无通知");
-        } else {
-            return new Result(Code.SEARCH_OK, AlertList);
+        String ConsumerKey = "consumer" + ConsumerId;
+        Object data = redisTemplate.opsForValue().get(ConsumerKey);
+        if (data != null){
+            return new Result(Code.SEARCH_OK, data);
+        }else {
+            List<ConsumerAlert> AlertList = consumerAlertDao.getAlertListByConsumerId(ConsumerId);
+            if (AlertList.size() == 0) {
+                return new Result(Code.SEARCH_ERR, "暂无通知");
+            } else {
+                redisTemplate.opsForValue().set(ConsumerKey, AlertList);
+                redisTemplate.expire(ConsumerKey, 60, TimeUnit.SECONDS); // 设置过期时间为60秒
+                return new Result(Code.SEARCH_OK, AlertList);
+            }
         }
     }
 
@@ -137,12 +150,13 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setConsumer_id(ConsumerId);
             consumerAlert.setAlert_status("0");
             consumerAlert.setTitle("扣款通知");
-            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setCreate_time(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime + ",共支出" + OrderPrice + "元。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
+            redisTemplate.delete("consumer" + consumerAlert.getConsumer_id());
         }
         //订单确认的通知
         if (type.equals("1")) {
@@ -159,13 +173,14 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setConsumer_id(ConsumerId);
             consumerAlert.setAlert_status("0");
             consumerAlert.setTitle("商家接受订单通知");
-            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setCreate_time(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定了" + house.getHouse_name() +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
                             ",订单已被房东接受，请耐心等待订单开始，祝您旅途愉快。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
+            redisTemplate.delete("consumer" + consumerAlert.getConsumer_id());
         }
         //订单结束的通知
         if (type.equals("2")){
@@ -182,13 +197,14 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setConsumer_id(ConsumerId);
             consumerAlert.setAlert_status("0");
             consumerAlert.setTitle("订单结束通知");
-            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setCreate_time(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
                             ",订单已于结束，希望您下次继续光临，若您满意的话，快去评价吧。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
+            redisTemplate.delete("consumer" + consumerAlert.getConsumer_id());
         }
         //订单开始的通知
         if (type.equals("3")){
@@ -205,13 +221,14 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setConsumer_id(ConsumerId);
             consumerAlert.setAlert_status("0");
             consumerAlert.setTitle("订单开始通知");
-            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setCreate_time(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
                             ",订单已开始，祝您旅途愉快，一路顺风。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
+            redisTemplate.delete("consumer" + consumerAlert.getConsumer_id());
         }
         //订单被取消的通知
         if (type.equals("4")){
@@ -229,13 +246,14 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
             consumerAlert.setConsumer_id(ConsumerId);
             consumerAlert.setAlert_status("0");
             consumerAlert.setTitle("订单取消通知");
-            consumerAlert.setDatetime(getDateTime1());
+            consumerAlert.setCreate_time(getDateTime1());
             consumerAlert.setContent(
                     "您于" + getDateTime2() + "预定的" + house.getHouse_name() +
                             ",预定日期为" + OrderBeginTime + "至" + OrderEndTime +
                             ",订单已被取消，退款金额为" + backMoney + "，请挑选其他民宿吧。"
             );
             consumerAlertDao.InsertConsumerAlert(consumerAlert);
+            redisTemplate.delete("consumer" + consumerAlert.getConsumer_id());
         }
     }
 
