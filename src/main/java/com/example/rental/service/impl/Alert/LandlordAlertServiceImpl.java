@@ -91,6 +91,7 @@ public class LandlordAlertServiceImpl implements LandlordAlertService {
     @Override
     public Result updateLandlordAlertStatus(String LandlordId, String AlertId) {
         if (landlordAlertDao.updateLandlordAlertStatus(LandlordId, AlertId)) {
+            redisTemplate.delete("consumer" + LandlordId);
             return new Result(Code.UPDATE_OK, "已读");
         } else {
             return new Result(Code.UPDATE_ERR, "已读失败");

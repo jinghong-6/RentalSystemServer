@@ -107,6 +107,7 @@ public class ConsumerAlertServiceImpl implements ConsumerAlertService {
      */
     public Result updateConsumerAlertStatus(String ConsumerId, String AlertId) {
         if (consumerAlertDao.updateConsumerAlertStatus(ConsumerId, AlertId)) {
+            redisTemplate.delete("consumer" + ConsumerId);
             return new Result(Code.UPDATE_OK, "已读");
         } else {
             return new Result(Code.UPDATE_ERR, "已读失败");
