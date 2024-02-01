@@ -20,6 +20,6 @@ public interface LandlordAlertDao {
     @Update("update landlord_alert set alert_status = '1' where landlord_id = #{LandlordId} and id = #{AlertId}")
     boolean updateLandlordAlertStatus(@Param("LandlordId") String LandlordId, @Param("AlertId") String AlertId);
 
-    @Insert("insert into landlord_alert values(#{id},#{landlord_id},#{title},#{content},#{alert_status},#{datetime})")
+    @Insert("insert into landlord_alert values(#{id},#{landlord_id},#{title},#{content},#{alert_status},#{create_time})")
     boolean InsertLandlordAlert(LandlordAlert landlordAlert);
 }

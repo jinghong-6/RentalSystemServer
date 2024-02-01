@@ -20,6 +20,6 @@ public interface ConsumerAlertDao {
     @Update("update consumer_alert set alert_status = '1' where consumer_id = #{ConsumerId} and id = #{AlertId}")
     boolean updateConsumerAlertStatus(@Param("ConsumerId") String ConsumerId, @Param("AlertId") String AlertId);
 
-    @Insert("insert into consumer_alert values(#{id},#{consumer_id},#{title},#{content},#{alert_status},#{datetime})")
+    @Insert("insert into consumer_alert values(#{id},#{consumer_id},#{title},#{content},#{alert_status},#{create_time})")
     boolean InsertConsumerAlert(ConsumerAlert consumerAlert);
 }
