@@ -18,6 +18,9 @@ public interface LandlordDao {
     @Select("select pwd from landlord where tele = #{tele}")
     public String getPwdByTele(String tele);
 
+    @Select("select landlord_name from landlord where id = #{landlordId}")
+    String getLandlordNameById(String landlordId);
+
     @Select("select " +
             "id,tele,landlord_name,introduce,qq,wechat,province,county,landlord_status,money,login_status,register_time,img_url,address " +
             "from landlord " +

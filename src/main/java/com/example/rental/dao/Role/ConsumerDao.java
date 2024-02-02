@@ -15,6 +15,9 @@ public interface ConsumerDao {
             "tele = #{tele}")
     int getSameAccount(String tele);
 
+    @Select("select consumer_name from consumer where id = #{consumerId}")
+    String getConsumerNameById(String consumerId);
+
     @Select("select pwd from consumer where tele = #{tele}")
     String getPwdByTele(String tele);
 
