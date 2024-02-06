@@ -64,8 +64,8 @@ public class AdminAlertServiceImpl implements AdminAlertService {
     public Result InsertAdminAlert(AdminAlert adminAlert) {
         // 获取当前日期
         Date currentDate = new Date();
-        // 创建SimpleDateFormat对象，指定日期格式
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        // 创建一个SimpleDateFormat对象，指定日期时间格式，使用HH表示24小时制
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
         // 使用SimpleDateFormat格式化日期
         String formattedDate = dateFormat.format(currentDate);
         adminAlert.setCreate_time(formattedDate);
