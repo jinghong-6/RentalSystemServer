@@ -44,7 +44,9 @@ public class LandlordAlertServiceImpl implements LandlordAlertService {
      * 根据房东ID获取通知信息。
      *
      * @param LandlordId 房东ID
-     * @return 返回包含通知信息的Result对象。如果没有通知，返回Code.SEARCH_ERR和"暂无通知"；否则，返回Code.SEARCH_OK和通知列表。
+     * @return 返回包含通知信息的Result对象。
+     *         如果没有通知，返回Code.SEARCH_ERR和"暂无通知",
+     *         否则，返回Code.SEARCH_OK和通知列表。
      */
     @Override
     public Result getAlertByLandlordId(String LandlordId) {
@@ -53,7 +55,7 @@ public class LandlordAlertServiceImpl implements LandlordAlertService {
         if (data != null){
             return new Result(Code.SEARCH_OK, data);
         }else {
-            List<Map<String, String>> AlertList = landlordAlertDao.getAlertListByLandlordId(LandlordId);
+            List<LandlordAlert> AlertList = landlordAlertDao.getAlertListByLandlordId(LandlordId);
             if (AlertList.size() == 0) {
                 return new Result(Code.SEARCH_ERR, "暂无通知");
             } else {
