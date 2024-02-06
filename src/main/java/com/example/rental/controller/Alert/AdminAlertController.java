@@ -29,7 +29,7 @@ public class AdminAlertController {
         return adminAlertService.updateConsumerAlertStatus(AlertId);
     }
 
-    @PostMapping("insert")
+    @PostMapping("/insert")
     public Result InsertAdminAlert(AdminAlert adminAlert){
         return adminAlertService.InsertAdminAlert(adminAlert);
     };

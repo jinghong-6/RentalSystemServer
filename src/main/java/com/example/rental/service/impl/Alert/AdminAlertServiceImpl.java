@@ -56,7 +56,7 @@ public class AdminAlertServiceImpl implements AdminAlertService {
         if (result) {
             return new Result(Code.UPDATE_OK, "已读");
         } else {
-            return new Result(Code.UPDATE_OK, "已读失败");
+            return new Result(Code.UPDATE_ERR, "已读失败");
         }
     }
 
@@ -74,7 +74,7 @@ public class AdminAlertServiceImpl implements AdminAlertService {
         if (result) {
             return new Result(Code.UPDATE_OK, "新增成功");
         } else {
-            return new Result(Code.UPDATE_OK, "新增失败");
+            return new Result(Code.UPDATE_ERR, "新增失败");
         }
     }
 
