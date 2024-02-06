@@ -65,11 +65,12 @@ public class AdminAlertServiceImpl implements AdminAlertService {
         // 获取当前日期
         Date currentDate = new Date();
         // 创建SimpleDateFormat对象，指定日期格式
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         // 使用SimpleDateFormat格式化日期
         String formattedDate = dateFormat.format(currentDate);
-
         adminAlert.setCreate_time(formattedDate);
+
+        adminAlert.setAlert_status("0");
         boolean result = adminAlertDao.InsertAdminAlert(adminAlert);
         if (result) {
             return new Result(Code.UPDATE_OK, "新增成功");

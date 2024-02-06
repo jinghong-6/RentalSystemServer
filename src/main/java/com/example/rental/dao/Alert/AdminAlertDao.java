@@ -19,6 +19,6 @@ public interface AdminAlertDao {
     @Update("update admin_alert set alert_status = '1' where id = #{AlertId}")
     boolean updateConsumerAlertStatus(String AlertId);
 
-    @Insert("insert into consumer_alert values(#{id},#{content},#{alert_status},#{user_id},#{user_type},#{create_time})")
+    @Insert("insert into admin_alert values(#{id},#{content},#{alert_status},#{user_id},#{user_type},#{create_time})")
     boolean InsertAdminAlert(AdminAlert adminAlert);
 }
