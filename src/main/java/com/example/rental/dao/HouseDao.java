@@ -73,13 +73,13 @@ public interface HouseDao {
             "where landlord_id = #{landlordId}")
     List<Map<String, Object>> getHouseByLandlordId(String landlordId);
 
-    @Select("select id from House where end_time < #{time} and house_status = '0'")
+    @Select("select id from house where end_time < #{time} and house_status = '0'")
     List<String> getOverHouseList(String time);
 
-    @Select("select id from House where end_time < #{time} and house_status != '0' and id = #{id}")
+    @Select("select id from house where end_time < #{time} and house_status != '0' and id = #{id}")
     List<String> getOverHouseList2(@Param("time") String time, @Param("id") String id);
 
-    @Select("select id from House where end_time > #{time} and house_status = '2'")
+    @Select("select id from house where end_time > #{time} and house_status = '2'")
     List<String> getunOverHouseList(String time);
 
     @Update("update house set house_status = #{status} where id = #{id}")

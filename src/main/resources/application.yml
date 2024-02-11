@@ -4,9 +4,8 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/rentalsystem?useSSL=false&allowPublicKeyRetrieval=true
-    username: root
-    password: 1397775326
+    url: jdbc:mysql://10.168.1.103:3306/rentalsystem?useSSL=false&allowPublicKeyRetrieval=true
+
   rabbitmq:
     # 集群地址，用逗号分隔
     addresses: 10.168.1.222:5672,10.168.1.201:5672,10.168.1.218:5672
