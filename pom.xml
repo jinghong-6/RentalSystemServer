@@ -143,7 +143,7 @@
                 </executions>
                 <configuration>
                     <includeSystemScope>true</includeSystemScope>
-                    <mainClass>com.example.weather.WeatherApplication</mainClass>
+                    <mainClass>com.example.rental.RentalApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
