@@ -131,6 +131,12 @@ public class ConsumerServiceImpl implements ConsumerService {
         consumer.setPay_pwd("111111");
 
         System.out.println(consumer);
+
+        String tele = consumer.getTele();
+        if (consumerDao.getSameAccount(tele) > 0){
+            return new Result(Code.SAVE_ERR,false);
+        }
+
         if (consumerDao.setAccount(consumer)){
             return new Result(Code.SAVE_OK,true);
         }else {

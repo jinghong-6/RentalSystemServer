@@ -53,7 +53,7 @@ public class HouseController {
     }
 
     @PostMapping()
-    public Boolean InsertHouse(House house){
+    public Result InsertHouse(House house){
         return houseService.InsertHouse(house);
     }
 

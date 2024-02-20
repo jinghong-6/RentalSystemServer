@@ -30,7 +30,7 @@ public interface HouseService {
     Result getHouseByLandlordId(String landlordId);
 
     //    新增民宿
-    Boolean InsertHouse(House house);
+    Result InsertHouse(House house);
 
     //    修改民宿
     Result UpdateHouseById(House house);

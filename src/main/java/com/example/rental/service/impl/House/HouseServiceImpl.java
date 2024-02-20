@@ -287,8 +287,13 @@ public class HouseServiceImpl implements HouseService {
     }
 
     @Override
-    public Boolean InsertHouse(House house) {
-        return houseDao.InsertHouse(house);
+    public Result InsertHouse(House house) {
+        if (houseDao.InsertHouse(house)){
+            return new Result(Code.SAVE_OK,"新增民宿成功");
+        }else {
+            return new Result(Code.SAVE_ERR,"新增民宿失败");
+        }
+
     }
 
     @Override
