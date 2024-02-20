@@ -103,6 +103,12 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>5.13.1</version> <!-- 使用你需要的版本 -->
+        </dependency>
+
 
     </dependencies>
 

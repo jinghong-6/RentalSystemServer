@@ -74,6 +74,12 @@ public class HouseServiceImpl implements HouseService {
             // 获取用户收藏列表中的房屋ID
             List<String> houseList = collectionDao.getHouseIdByConsumerId(consumerId);
             List<Map<String, String>> cityAndType2 = getCityAndTypeList(houseList);
+
+            // 如果收藏列表为空，直接返回包含随机房屋列表的Result对象
+            if (houseList.isEmpty()) {
+                return new Result(Code.SEARCH_OK, updateCityId(houseDao.getHouseRand()));
+            }
+
             // 将收藏列表的城市和类型合并到相应列表中
             typeList.addAll(getTypeList(cityAndType2));
             provinceList.addAll(getProvinceList(cityAndType2));
@@ -84,10 +90,6 @@ public class HouseServiceImpl implements HouseService {
             String mostCommonType = findMostCommonValue(typeList, "type");
             // 获取随机的相应类型的房屋列表
             List<House> typeHouseList = houseDao.getHouseByTypeRand(mostCommonType, numTypeListToSelect);
-            System.out.println(mostCommonType);
-            System.out.println(typeHouseList);
-            System.out.println(typeHouseList.size());
-            System.out.println(numTypeListToSelect);
             // 如果房屋列表数量足够，添加到返回结果中；否则，添加随机房屋列表
             if (typeHouseList.size() >= numTypeListToSelect) {
                 returnHouse = typeHouseList;
@@ -126,7 +128,6 @@ public class HouseServiceImpl implements HouseService {
             return new Result(Code.SEARCH_OK, updateCityId(houseDao.getHouseRand()));
         }
     }
-
 
     private List<Map<String, String>> getCityAndTypeList(List<String> houseIds) {
         List<Map<String, String>> cityAndTypeList = new ArrayList<>();

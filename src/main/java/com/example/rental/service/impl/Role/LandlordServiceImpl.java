@@ -164,7 +164,7 @@ public class LandlordServiceImpl implements LandlordService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String time = formatter.format(date);
 
-        landlord.setImg_url("http://10.168.1.160/api/group1/M00/00/00/CqgBuWTEwIiAGdpFAABvCRM88IY897.jpg");
+        landlord.setImg_url("http://zzw.fj.cn/p/group1/M00/00/00/CqgBuWTEwIiAGdpFAABvCRM88IY897.jpg");
         landlord.setLandlord_status(0);
         landlord.setRegister_time(time);
         landlord.setLogin_status(0);

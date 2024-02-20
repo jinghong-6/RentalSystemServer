@@ -29,11 +29,11 @@ public interface OrderNopayDao {
             "ORDER BY order_end_time ASC")
     List<Map<String,Object>> getOrderByLandlordId(String landlord_id);
 
-    @Select("select order_id,price_all from order_Nopay where uuid = #{uuid}")
+    @Select("select order_id,price_all from order_nopay where uuid = #{uuid}")
     Map<String,String> getOrderByUuid(String uuid);
 
     @Select("select " +
-            "consumer_id,landlord_id,house_id,price_all,begin_time,end_time,order_end_time from order_Nopay " +
+            "consumer_id,landlord_id,house_id,price_all,begin_time,end_time,order_end_time from order_nopay " +
             "where " +
             "uuid = #{uuid}")
     Map<String,Object> getPayOrderInfoByUuid(String uuid);
@@ -48,14 +48,14 @@ public interface OrderNopayDao {
             ")")
     boolean addOrder(OrderNopay orderNopay);
 
-    @Delete("DELETE FROM order_Nopay WHERE uuid = #{uuid}")
+    @Delete("DELETE FROM order_nopay WHERE uuid = #{uuid}")
     boolean deleteDataFromOrderNopay(String uuid);
 
     @Update("update order_nopay set order_status = '5' where uuid = #{uuid}")
     boolean updateOrderStatusToEnd(String uuid);
 
     @Select("SELECT uuid " +
-            "FROM order_Nopay " +
+            "FROM order_nopay " +
             "WHERE house_id = #{houseId} AND ( " +
             "    (#{new_begin_time} BETWEEN begin_time AND end_time) " +
             "    OR (#{new_end_time} BETWEEN begin_time AND end_time) " +

@@ -88,7 +88,7 @@ public interface HouseDao {
     @Insert("insert into house " +
             "values(" +
             "#{id},#{landlord_id},#{house_name},#{introduce},#{price},#{city_id},#{full_address}," +
-            "#{firstImg},#{img},#{begin_time},#{end_time},#{service},#{type},#{max_num},#{house_status}" +
+            "#{firstImg},#{img},#{begin_time},#{end_time},#{service},#{type},#{max_num},0" +
             ")")
     boolean InsertHouse(House house);
 
