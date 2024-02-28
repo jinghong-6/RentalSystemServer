@@ -1,5 +1,6 @@
 package com.example.rental.service.impl;
 
+import com.example.rental.dao.CityDao;
 import com.example.rental.dao.CollectionDao;
 import com.example.rental.dao.HouseDao;
 import com.example.rental.domain.Collection;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CollectionImpl implements CollectionService {
@@ -22,6 +24,9 @@ public class CollectionImpl implements CollectionService {
 
     @Autowired
     public HouseDao houseDao;
+
+    @Autowired
+    public CityDao cityDao;
 
     @Override
     public Result getAllCollection() {
@@ -34,6 +39,10 @@ public class CollectionImpl implements CollectionService {
         if (houseIdList != null && houseIdList.size() != 0) {
             List<House> houseList = new ArrayList<>();
             for (String id : houseIdList) {
+                House house = houseDao.getHouseById(id);
+                String CityId = house.getCity_id();
+                Map<String,String> City = cityDao.getCityNameById(CityId);
+                house.setCity_id(City.get("provinceZh") + "-" + City.get("cityZh"));
                 houseList.add(houseDao.getHouseById(id));
             }
             return new Result(Code.SEARCH_OK,houseList);
