@@ -28,7 +28,7 @@ public interface AdminDao {
             "from consumer")
     List<Consumer> getAllConsumer();
 
-    @Update("update consumer set consumer_status = #{status} where id = #{id}")
+    @Update("update consumer set consumer_status = #{status},pwd_lock_num='0' where id = #{id}")
     boolean UpdateConsumerStatusById(@Param("status") String status, @Param("id") String id);
 
     @Select("select " +

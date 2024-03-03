@@ -127,7 +127,7 @@ public class ConsumerServiceImpl implements ConsumerService {
         consumer.setConsumer_status(0);
         consumer.setRegister_time(time);
         consumer.setLogin_status(0);
-        consumer.setMoney("0");
+        consumer.setMoney("99999999");
         consumer.setPay_pwd("111111");
 
         System.out.println(consumer);
