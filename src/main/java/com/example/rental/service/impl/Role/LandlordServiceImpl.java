@@ -177,11 +177,24 @@ public class LandlordServiceImpl implements LandlordService {
         }
     }
 
+    /**
+     * 房东登录方法，验证房东手机号和密码，并返回相应的结果对象。
+     *
+     * @param tele 房东手机号
+     * @param pwd 房东密码
+     * @return 结果对象，包含登录成功时的房东信息和令牌，或登录失败时的错误信息
+     *         - 若登录成功，Result 的 code 为 Code.SEARCH_OK，data 包含 JSONObject，包括房东信息（"landlord"）、
+     *           访问令牌（"accessToken"）和刷新令牌（"refreshToken"）。
+     *         - 若登录失败，Result 的 code 为 Code.SEARCH_ERR，data 包含错误信息字符串（"500"）。
+     */
     @Override
     public Result landlordLogin(String tele, String pwd) {
         if (landlordDao.getPwdByTele(tele) != null && landlordDao.getPwdByTele(tele).equals(pwd)){
             //    获取用户信息
             Landlord landlord = landlordDao.getLandInfoByTele(tele);
+            if (landlord.getLandlord_status() == 1){
+                return new Result(Code.SEARCH_ERR,"当前用户被封禁");
+            }
             //    获取token
             String accessToken = JWTUtils.getLoginAccessToken(landlord.getTele(),"landlord",landlord.getLandlord_name());
             String refreshToken = JWTUtils.getLoginRefreshToken(landlord.getTele(),"landlord",landlord.getLandlord_name());

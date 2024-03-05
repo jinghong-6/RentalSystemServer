@@ -32,6 +32,14 @@ public class ConsumerServiceImpl implements ConsumerService {
     @Autowired
     private HouseDao houseDao;
 
+    /**
+     * 获取用户详细信息方法，包括评论数、收藏数、订单数、收藏的民宿类型、订单的民宿类型以及每月订单数和总价。
+     *
+     * @param ConsumerId 用户ID
+     * @return 结果对象，包含用户详细信息的映射
+     *         - 若获取成功，Result 的 code 为 Code.SEARCH_OK，data 包含用户详细信息的映射。
+     *         - 若获取失败，Result 的 code 为 Code.SEARCH_ERR，data 为错误信息字符串。
+     */
     @Override
     public Result getUserInfo(String ConsumerId) {
         Map<String,Object> map = new HashMap<>();
@@ -76,6 +84,13 @@ public class ConsumerServiceImpl implements ConsumerService {
         return new Result(Code.SEARCH_OK,map);
     }
 
+    /**
+     * 根据房屋ID列表统计各房屋类型的数量，并返回结果列表。
+     *
+     * @param houseIdList 包含房屋ID的列表
+     * @return 结果列表，包含各房屋类型的名称和数量的映射
+     *         - 每个映射包含两个键值对： "name" 表示房屋类型名称， "value" 表示该类型的数量。
+     */
     private List<Map<String, String>> getCountList(List<String> houseIdList) {
         List<Map<String, String>> resultList = new ArrayList<>();
         List<String> houseTypeList = new ArrayList<>();
@@ -102,7 +117,14 @@ public class ConsumerServiceImpl implements ConsumerService {
         return resultList;
     }
 
-    // 查看是否有相同的账户
+    /**
+     * 检查是否存在相同手机号的账户，返回相应的结果对象。
+     *
+     * @param tele 待检查的手机号
+     * @return 结果对象，包含检查结果和相关信息
+     *         - 若不存在相同手机号的账户，Result 的 code 为 Code.SEARCH_OK，data 为注册令牌（AccountToken）。
+     *         - 若存在相同手机号的账户，Result 的 code 为 Code.SAVE_ERR，data 为错误信息字符串（"500"）。
+     */
     @Override
     public Result getSameAccount(String tele) {
         String filtered = CharacterFilter.filterSpecialCharacters(tele);
@@ -115,7 +137,15 @@ public class ConsumerServiceImpl implements ConsumerService {
         }
     }
 
-    // 用户注册
+    /**
+     * 用户注册方法，将用户信息保存至数据库，并返回相应的结果对象。
+     *
+     * @param consumer 要注册的用户对象，包含必要的用户信息
+     * @return 结果对象，包含注册成功或失败的状态和相关信息
+     *         - 若注册成功，Result 的 code 为 Code.SAVE_OK，data 为 true。
+     *         - 若注册失败，Result 的 code 为 Code.SAVE_ERR，data 为 false。
+     *         - 若注册失败且手机号已存在，Result 的 code 为 Code.SAVE_ERR，data 为 false。
+     */
     @Override
     public Result userRegister(Consumer consumer) {
         //  注册时间
@@ -144,12 +174,24 @@ public class ConsumerServiceImpl implements ConsumerService {
         }
     }
 
-    // 通过账号获取密码
+    /**
+     * 用户登录方法，验证用户手机号和密码，并返回相应的结果对象。
+     *
+     * @param tele 用户手机号
+     * @param pwd 用户密码
+     * @return 结果对象，包含登录成功时的用户信息和令牌，或登录失败时的错误信息
+     *         - 若登录成功，Result 的 code 为 Code.SEARCH_OK，data 包含 JSONObject，包括用户信息（"consumer"）、
+     *           访问令牌（"accessToken"）和刷新令牌（"refreshToken"）。
+     *         - 若登录失败，Result 的 code 为 Code.SEARCH_ERR，data 包含错误信息字符串。
+     */
     @Override
     public Result userLogin(String tele,String pwd) {
         if (consumerDao.getPwdByTele(tele) != null && consumerDao.getPwdByTele(tele).equals(pwd)){
             //    获取用户信息
             Consumer consumer = consumerDao.getUserInfoByTele(tele);
+            if(consumer.getConsumer_status() == 1){
+                return new Result(Code.SEARCH_ERR,"当前用户被封禁");
+            }
             //    获取token
             String accessToken = JWTUtils.getLoginAccessToken(consumer.getTele(),"consumer",consumer.getConsumer_name());
             String refreshToken = JWTUtils.getLoginRefreshToken(consumer.getTele(),"consumer",consumer.getConsumer_name());
@@ -165,6 +207,17 @@ public class ConsumerServiceImpl implements ConsumerService {
         }
     }
 
+    /**
+     * 用户自动登录方法，根据手机号获取用户信息，并生成访问令牌和刷新令牌返回结果对象。
+     *
+     * @param tele 用户手机号
+     * @return 结果对象，包含自动登录成功时的用户信息和令牌
+     *         - 若自动登录成功，Result 的 code 为 Code.SEARCH_OK，data 包含 JSONObject，包括用户信息（"consumer"）、
+     *           访问令牌（"accessToken"）和刷新令牌（"refreshToken"）。
+     *         - 若自动登录失败（手机号不存在等），Result 的 code 为 Code.SEARCH_ERR，data 包含错误信息字符串。
+     *
+     * @param tele 用户手机号
+     */
     @Override
     public Result userAutoLogin(String tele) {
         //    获取用户信息
@@ -181,6 +234,16 @@ public class ConsumerServiceImpl implements ConsumerService {
         return new Result(Code.SEARCH_OK,json);
     }
 
+    /**
+     * 更新用户信息方法，根据提供的用户信息更新数据库中的用户数据。
+     *
+     * @param consumer 包含更新后的用户信息的 Consumer 对象
+     * @return 结果对象，包含更新成功或失败的状态和相关信息
+     *         - 若更新成功，Result 的 code 为 Code.UPDATE_OK，data 为更新成功的提示信息（"更新成功"）。
+     *         - 若更新失败，Result 的 code 为 Code.UPDATE_ERR，data 为更新失败的提示信息（"更新失败"）。
+     *
+     * @param consumer 包含更新后的用户信息的 Consumer 对象
+     */
     @Override
     public Result UpdateConsumerInfo(Consumer consumer) {
         boolean updateResult = consumerDao.UpdateConsumerInfo(consumer);
