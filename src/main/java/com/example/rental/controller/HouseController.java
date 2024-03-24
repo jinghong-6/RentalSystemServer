@@ -22,7 +22,6 @@ public class HouseController {
 
     @GetMapping("/getHouse/{houseId}")
     public Result getHouseById(@PathVariable String houseId){
-        System.out.println("houseId:" + houseId);
         return new Result(Code.SEARCH_OK,houseService.getHouseById(houseId));
     }
 
@@ -48,7 +47,6 @@ public class HouseController {
 
     @PostMapping("/LandlordId")
     public Result getHouseByLandlordId(String landlordId){
-        System.out.println(landlordId);
         return houseService.getHouseByLandlordId(landlordId);
     }
 

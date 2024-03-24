@@ -153,7 +153,7 @@ public class ConsumerServiceImpl implements ConsumerService {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         String time = formatter.format(date);
 
-        consumer.setImg_url("http://zzw.fj.cn/p/group1/M00/00/00/CqgBuWTEwIiAGdpFAABvCRM88IY897.jpg");
+        consumer.setImg_url("http://zzw.fj.cn/p/group1/M00/00/00/CqgBbWX2vgOAWZxqAABvCRM88IY968.jpg");
         consumer.setConsumer_status(0);
         consumer.setRegister_time(time);
         consumer.setLogin_status(0);
